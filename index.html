@@ -1,0 +1,717 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Aula 26: "E Se...?" – Condicionais Zero e Tipo 1</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        /* --- RESET E BASE --- */
+        * { box-sizing: border-box; }
+        body {
+            font-family: 'Inter', sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f2f5;
+            color: #333;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: #fff;
+            padding: 20px 15px; /* Margens seguras para mobile */
+            min-height: 100vh;
+            box-shadow: 0 0 20px rgba(0,0,0,0.05);
+        }
+
+        /* --- TIPOGRAFIA --- */
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            font-size: 1.5rem;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 3px solid #3498db;
+            line-height: 1.3;
+        }
+        
+        h2, h3, h4 { color: #2c3e50; margin-top: 25px; }
+        h3 { color: #34495e; font-size: 1.25rem; border-left: 4px solid #3498db; padding-left: 10px; }
+        h4 { color: #c0392b; font-size: 1.1rem; margin-bottom: 10px; }
+        
+        p, li { font-size: 1rem; margin-bottom: 10px; }
+        
+        .emoji-large { font-size: 1.5rem; }
+        .emoji-small { font-size: 1.2rem; }
+
+        /* --- DESTAQUES E CAIXAS --- */
+        .theme-intro, .nota-gramatical, .nota-dica, .secao-exercicios, .extra-task {
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 8px;
+            border-left: 5px solid transparent;
+        }
+
+        .theme-intro { background-color: #eaf2f8; border-left-color: #3498db; }
+        .nota-gramatical { background-color: #ecf0f1; border-left-color: #f39c12; }
+        .nota-dica { background-color: #e8f6f3; border-left-color: #16a085; }
+        .extra-task { background-color: #f5eef8; border-left-color: #9b59b6; }
+        .secao-exercicios { background-color: #fff8e1; border-left-color: #f39c12; }
+
+        .example-word { color: #2980b9; font-weight: 700; }
+        
+        /* --- ESTILOS DE IPA E PRONÚNCIA --- */
+        code, .ipa-symbol {
+            font-family: 'Roboto Mono', monospace;
+            background-color: #f1f1f1;
+            padding: 2px 4px;
+            border-radius: 4px;
+            color: #e74c3c;
+            font-size: 0.9em;
+        }
+        
+        .character-portuguese-phonetics {
+            display: block;
+            color: #27ae60;
+            font-style: italic;
+            font-size: 0.85em;
+            margin-top: 2px;
+        }
+
+        /* --- BOTÃO DE NAVEGAÇÃO --- */
+        .nav-btn {
+            display: block;
+            width: 100%;
+            background-color: #34495e;
+            color: white;
+            text-align: center;
+            padding: 12px;
+            margin: 10px 0;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: bold;
+            border: none;
+            cursor: pointer;
+        }
+        .nav-btn:hover { background-color: #2c3e50; }
+
+        /* --- TABELAS OTIMIZADAS PARA MOBILE --- */
+        .table-responsive-wrapper {
+            width: 100%;
+            overflow-x: auto;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            border: 1px solid #eee;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 100%; /* Garante que a tabela ocupe o espaço */
+        }
+
+        th {
+            background-color: #34495e;
+            color: white;
+            padding: 10px;
+            font-size: 0.9rem;
+            text-align: left;
+        }
+
+        td {
+            padding: 12px 10px;
+            border-bottom: 1px solid #eee;
+            vertical-align: top;
+        }
+
+        tr:nth-child(even) { background-color: #f9f9f9; }
+
+        /* Estilo especial para empilhar conteúdo na tabela (Tradução/IPA na mesma célula) */
+        .details-cell {
+            font-size: 0.9rem;
+            color: #555;
+        }
+        .details-translation {
+            display: block;
+            margin-top: 6px;
+            padding-top: 6px;
+            border-top: 1px dashed #ddd;
+            color: #444;
+            font-weight: 500;
+        }
+
+        /* --- BOTÃO DE ÁUDIO GERAL --- */
+        .audio-btn-inline {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1.2rem;
+            vertical-align: middle;
+            margin-left: 5px;
+            padding: 0 5px;
+        }
+        
+        /* --- VOCABULÁRIO: GRID DE CARDS (Mobile First) --- */
+        .vocab-grid {
+            display: grid;
+            grid-template-columns: 1fr; /* 1 coluna no mobile */
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        @media (min-width: 600px) {
+            .vocab-grid {
+                grid-template-columns: 1fr 1fr; /* 2 colunas em telas maiores */
+            }
+        }
+
+        .vocab-item {
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 10px;
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.02);
+            transition: transform 0.2s;
+        }
+        
+        .vocab-item:active { transform: scale(0.98); background-color: #fdfdfd; }
+
+        .vocab-text {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .vocab-en {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #2c3e50;
+        }
+
+        .vocab-ipa {
+            font-family: 'Roboto Mono', monospace;
+            font-size: 0.85rem;
+            color: #e67e22; /* Laranja para destaque */
+        }
+
+        .vocab-pt {
+            font-size: 0.8rem;
+            color: #7f8c8d;
+            text-transform: uppercase;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            margin-top: 2px;
+        }
+
+        .audio-btn-round {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            cursor: pointer;
+            flex-shrink: 0;
+            margin-left: 10px;
+            box-shadow: 0 2px 5px rgba(52, 152, 219, 0.3);
+        }
+        
+        .audio-btn-round:active { background-color: #2980b9; }
+
+        /* --- GABARITO E EXERCÍCIOS --- */
+        .fill-in-blank {
+            display: inline-block;
+            min-width: 60px;
+            border-bottom: 2px solid #3498db;
+            text-align: center;
+            color: #3498db;
+            font-weight: bold;
+            padding: 0 5px;
+        }
+
+        details.gabarito {
+            margin-top: 20px;
+            background: #f8f9fa;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 10px;
+        }
+        
+        details.gabarito summary {
+            font-weight: bold;
+            cursor: pointer;
+            color: #2c3e50;
+            padding: 10px;
+            list-style: none; /* Remove seta padrão em alguns browsers */
+        }
+        
+        details.gabarito summary::after {
+            content: " 👇";
+        }
+        
+        details.gabarito[open] summary::after {
+            content: " 👆";
+        }
+
+        .gabarito-content {
+            padding: 15px;
+            border-top: 1px solid #ddd;
+            color: #555;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- Botão Navegação Topo -->
+        <button class="nav-btn" onclick="alert('Voltar ao Menu Principal')">⬅ Voltar ao Menu</button>
+
+        <h1>Aula 26: "E Se...?" – Condicionais Zero e Tipo 1 (Reais e Prováveis) <span class="emoji-large">🤔🔮</span><br><span style="font-size: 0.8em; font-weight: normal;">(What If...? – Zero and First Conditionals)</span></h1>
+
+        <div class="theme-intro">
+            <p>Bem-vindo(a) à Aula 26! <span class="emoji-small">✨</span></p>
+            <p>Hoje vamos aprender a falar sobre <strong>causa e efeito</strong> e <strong>possibilidades reais</strong> no futuro. As "Conditionals" (Condicionais) são frases que descrevem o que acontece (ou acontecerá) <em>se</em> uma determinada condição for atendida. Nosso tema será <strong>Fatos científicos, leis da natureza e planos futuros baseados em condições</strong>. Prepare-se para planejar e prever! <span class="emoji-small">🌡️☔📅</span></p>
+        </div>
+
+        <h2>26. Causa, Efeito e Possibilidades Reais</h2>
+
+        <section id="zero-conditional">
+            <h3>26.1 Zero Conditional: Fatos e Verdades Universais <span class="emoji-small">🌍</span></h3>
+            <p>O <strong>Zero Conditional</strong> é usado para falar sobre fatos que são sempre verdadeiros, verdades científicas, hábitos ou regras gerais. Se a condição acontecer, o resultado é 100% certo.</p>
+            <p><strong>Estrutura:</strong> If + Present Simple, ... Present Simple.</p>
+            
+            <div class="table-responsive-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th style="width: 45%;">Frase em Inglês</th>
+                            <th>Detalhes (IPA / Tradução)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Frase 1 -->
+                        <tr>
+                            <td>If you <span class="example-word">heat</span> water to 100 degrees Celsius, it <span class="example-word">boils</span>. <button class="audio-btn-inline" onclick="playAudio('If you heat water to 100 degrees Celsius, it boils.')">🔊</button></td>
+                            <td class="details-cell"><span class="ipa-symbol">/ɪf juː hiːt ˈwɔːtər tuː wʌn ˈhʌndrəd dɪˈɡriːz ˈselsiəs ɪt bɔɪlz/</span><br><span class="character-portuguese-phonetics">(ÊF iúu RÍIT UÓ-tãr tu UÂN RÂN-drêd dĩ-GRÍIZ SÉL-si-ãs êt BÓILZ)</span><span class="details-translation">Se você aquece água a 100 graus Celsius, ela ferve.</span></td>
+                        </tr>
+                        <!-- Frase 2 -->
+                        <tr>
+                            <td>Plants <span class="example-word">die</span> if they <span class="example-word">don't get</span> enough water. <button class="audio-btn-inline" onclick="playAudio('Plants die if they don\'t get enough water.')">🔊</button></td>
+                            <td class="details-cell"><span class="ipa-symbol">/plænts daɪ ɪf ðeɪ doʊnt ɡet ɪˈnʌf ˈwɔːtər/</span><br><span class="character-portuguese-phonetics">(PLÉNTS DÁI êf dhêi DÔUNT GUÉT i-NÂF UÓ-tãr)</span><span class="details-translation">As plantas morrem se não recebem água suficiente.</span></td>
+                        </tr>
+                        <!-- Frase 3 -->
+                        <tr>
+                            <td>If you <span class="example-word">mix</span> red and yellow, you <span class="example-word">get</span> orange. <button class="audio-btn-inline" onclick="playAudio('If you mix red and yellow, you get orange.')">🔊</button></td>
+                            <td class="details-cell"><span class="ipa-symbol">/ɪf juː mɪks red ænd ˈjeloʊ juː ɡet ˈɔːrɪndʒ/</span><br><span class="character-portuguese-phonetics">(ÊF iúu MÊKS RÉD énd IÉ-lôu iúu GUÉT Ó-rĩndj)</span><span class="details-translation">Se você mistura vermelho e amarelo, você obtém laranja.</span></td>
+                        </tr>
+                        <!-- Frase 4 -->
+                        <tr>
+                            <td>When I <span class="example-word">drink</span> too much coffee, I <span class="example-word">can't sleep</span> well. <button class="audio-btn-inline" onclick="playAudio('When I drink too much coffee, I can\'t sleep well.')">🔊</button></td>
+                            <td class="details-cell"><span class="ipa-symbol">/wen aɪ drɪŋk tuː mʌtʃ ˈkɔːfi aɪ kænt sliːp wel/</span><br><span class="character-portuguese-phonetics">(UÉN ái DRÊNK TÚU MÂTCH CÓ-fi ái KÉNT SLÍIP UÉL)</span><span class="details-translation">Quando eu bebo muito café, não consigo dormir bem.</span></td>
+                        </tr>
+                        <!-- Frase 5 -->
+                        <tr>
+                            <td>If you <span class="example-word">don't eat</span>, you <span class="example-word">get</span> hungry. <button class="audio-btn-inline" onclick="playAudio('If you don\'t eat, you get hungry.')">🔊</button></td>
+                            <td class="details-cell"><span class="ipa-symbol">/ɪf juː doʊnt iːt juː ɡet ˈhʌŋɡri/</span><br><span class="character-portuguese-phonetics">(ÊF iúu DÔUNT ÍIT iúu GUÉT RÂN-gri)</span><span class="details-translation">Se você não come, você fica com fome.</span></td>
+                        </tr>
+                        <!-- Frase 6 -->
+                        <tr>
+                            <td>Metals <span class="example-word">expand</span> if you <span class="example-word">heat</span> them. <button class="audio-btn-inline" onclick="playAudio('Metals expand if you heat them.')">🔊</button></td>
+                            <td class="details-cell"><span class="ipa-symbol">/ˈmetlz ɪkˈspænd ɪf juː hiːt ðəm/</span><br><span class="character-portuguese-phonetics">(MÉ-tõlz ek-SPÉND êf iúu RÍIT dhãm)</span><span class="details-translation">Metais expandem se você os aquece.</span></td>
+                        </tr>
+                        <!-- Frase 7 -->
+                        <tr>
+                            <td>If it <span class="example-word">rains</span>, the ground <span class="example-word">gets</span> wet. <button class="audio-btn-inline" onclick="playAudio('If it rains, the ground gets wet.')">🔊</button></td>
+                            <td class="details-cell"><span class="ipa-symbol">/ɪf ɪt reɪnz ðə ɡraʊnd ɡets wet/</span><br><span class="character-portuguese-phonetics">(ÊF êt RÊINZ, dhã GRÁUND GUÉTS UÉT)</span><span class="details-translation">Se chove, o chão fica molhado.</span></td>
+                        </tr>
+                        <!-- Frase 8 -->
+                        <tr>
+                            <td>When the sun <span class="example-word">goes down</span>, it <span class="example-word">gets</span> dark. <button class="audio-btn-inline" onclick="playAudio('When the sun goes down, it gets dark.')">🔊</button></td>
+                            <td class="details-cell"><span class="ipa-symbol">/wen ðə sʌn ɡoʊz daʊn ɪt ɡets dɑːrk/</span><br><span class="character-portuguese-phonetics">(UÉN dhã SÂN GÔUZ DÁUN êt GUÉTS DÁRK)</span><span class="details-translation">Quando o sol se põe, fica escuro.</span></td>
+                        </tr>
+                        <!-- Frase 9 -->
+                        <tr>
+                            <td>If you <span class="example-word">touch</span> fire, you <span class="example-word">get</span> burned. <button class="audio-btn-inline" onclick="playAudio('If you touch fire, you get burned.')">🔊</button></td>
+                            <td class="details-cell"><span class="ipa-symbol">/ɪf juː tʌtʃ ˈfaɪər juː ɡet bɜːrnd/</span><br><span class="character-portuguese-phonetics">(ÊF iúu TÂTCH FÁI-ãr iúu GUÉT BÃRND)</span><span class="details-translation">Se você toca no fogo, você se queima.</span></td>
+                        </tr>
+                        <!-- Frase 10 -->
+                        <tr>
+                            <td>People <span class="example-word">get</span> thirsty if they <span class="example-word">don't drink</span> enough water. <button class="audio-btn-inline" onclick="playAudio('People get thirsty if they don\'t drink enough water.')">🔊</button></td>
+                            <td class="details-cell"><span class="ipa-symbol">/ˈpiːpl ɡet ˈθɜːrsti ɪf ðeɪ doʊnt drɪŋk ɪˈnʌf ˈwɔːtər/</span><br><span class="character-portuguese-phonetics">(PÍI-põl GUÉT THÃRS-ti êf dhêi DÔUNT DRÊNK i-NÂF UÓ-tãr)</span><span class="details-translation">As pessoas ficam com sede se não bebem água suficiente.</span></td>
+                        </tr>
+                        <!-- Frase 11 -->
+                        <tr>
+                            <td>If you <span class="example-word">press</span> that button, the machine <span class="example-word">turns on</span>. <button class="audio-btn-inline" onclick="playAudio('If you press that button, the machine turns on.')">🔊</button></td>
+                            <td class="details-cell"><span class="ipa-symbol">/ɪf juː pres ðæt ˈbʌtn ðə məˈʃiːn tɜːrnz ɑːn/</span><br><span class="character-portuguese-phonetics">(ÊF iúu PRÉS DHÉT BÂ-tãn, dhã mã-XÍIN TÃRNZ ÓN)</span><span class="details-translation">Se você aperta aquele botão, a máquina liga.</span></td>
+                        </tr>
+                        <!-- Frase 12 -->
+                        <tr>
+                            <td>Computers <span class="example-word">get</span> slow if you <span class="example-word">open</span> too many apps. <button class="audio-btn-inline" onclick="playAudio('Computers get slow if you open too many apps.')">🔊</button></td>
+                            <td class="details-cell"><span class="ipa-symbol">/kəmˈpjuːtərz ɡet sloʊ ɪf juː ˈoʊpən tuː ˈmeni æps/</span><br><span class="character-portuguese-phonetics">(cãm-PIÚU-tãrz GUÉT SLÔU êf iúu ÔU-pãn TÚU MÉ-ni ÉPS)</span><span class="details-translation">Computadores ficam lentos se você abre muitos aplicativos.</span></td>
+                        </tr>
+                        <!-- Frase 13 -->
+                        <tr>
+                            <td>If you <span class="example-word">don't sleep</span> enough, you <span class="example-word">feel</span> tired the next day. <button class="audio-btn-inline" onclick="playAudio('If you don\'t sleep enough, you feel tired the next day.')">🔊</button></td>
+                            <td class="details-cell"><span class="ipa-symbol">/ɪf juː doʊnt sliːp ɪˈnʌf juː fiːl ˈtaɪərd ðə nekst deɪ/</span><br><span class="character-portuguese-phonetics">(ÊF iúu DÔUNT SLÍIP i-NÂF, iúu FÍIL TÁI-ãrd dhã NÉKST DÊI)</span><span class="details-translation">Se você não dorme o suficiente, você se sente cansado no dia seguinte.</span></td>
+                        </tr>
+                        <!-- Frase 14 -->
+                        <tr>
+                            <td>When it <span class="example-word">is</span> a holiday, the shops <span class="example-word">are</span> usually closed. <button class="audio-btn-inline" onclick="playAudio('When it is a holiday, the shops are usually closed.')">🔊</button></td>
+                            <td class="details-cell"><span class="ipa-symbol">/wen ɪt ɪz ə ˈhɑːlədeɪ ðə ʃɑːps ɑːr ˈjuːʒuəli kloʊzd/</span><br><span class="character-portuguese-phonetics">(UÉN êt êz ã RÓ-lĩ-dei, dhã XÓPS ár IÚU-jua-li CLÔUZD)</span><span class="details-translation">Quando é feriado, as lojas geralmente estão fechadas.</span></td>
+                        </tr>
+                        <!-- Frase 15 -->
+                        <tr>
+                            <td>If you <span class="example-word">add</span> sugar to tea, it <span class="example-word">tastes</span> sweet. <button class="audio-btn-inline" onclick="playAudio('If you add sugar to tea, it tastes sweet.')">🔊</button></td>
+                            <td class="details-cell"><span class="ipa-symbol">/ɪf juː æd ˈʃʊɡər tə tiː ɪt teɪsts swiːt/</span><br><span class="character-portuguese-phonetics">(ÊF iúu ÉD XÚ-gãr tã TÍI, êt TÊISTS SUÍIT)</span><span class="details-translation">Se você adiciona açúcar ao chá, ele fica com gosto doce.</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <p class="nota-dica"><strong>Dica:</strong> No Zero Conditional, você pode substituir "if" por "when" sem mudar muito o sentido. <br><em>When you heat ice, it melts.</em></p>
+        </section>
+
+        <section id="first-conditional">
+            <h3>26.2 First Conditional: Possibilidades Reais no Futuro <span class="emoji-small">🔮</span></h3>
+            <p>O <strong>First Conditional</strong> é usado para falar sobre situações reais ou muito prováveis no futuro. Existe uma condição real e um resultado provável.</p>
+            <p><strong>Estrutura:</strong> If + Present Simple, ... WILL + Verbo (Futuro Simples).</p>
+            
+            <div class="table-responsive-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th style="width: 45%;">Frase em Inglês</th>
+                            <th>Detalhes (IPA / Tradução)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Frase 1 -->
+                        <tr>
+                            <td>If it <span class="example-word">rains</span> tomorrow, I <span class="example-word">will stay</span> home. <button class="audio-btn-inline" onclick="playAudio('If it rains tomorrow, I will stay home.')">🔊</button></td>
+                            <td class="details-cell"><span class="ipa-symbol">/ɪf ɪt reɪnz təˈmɑːroʊ aɪ wɪl steɪ hoʊm/</span><br><span class="character-portuguese-phonetics">(ÊF êt RÊINZ tã-MÓ-rôu, ái uêl STÊI RÔUM)</span><span class="details-translation">Se chover amanhã, eu ficarei em casa.</span></td>
+                        </tr>
+                        <!-- Frase 2 -->
+                        <tr>
+                            <td>If you <span class="example-word">study</span> hard, you <span class="example-word">will pass</span> the exam. <button class="audio-btn-inline" onclick="playAudio('If you study hard, you will pass the exam.')">🔊</button></td>
+                            <td class="details-cell"><span class="ipa-symbol">/ɪf juː ˈstʌdi hɑːrd juː wɪl pæs ði ɪɡˈzæm/</span><br><span class="character-portuguese-phonetics">(ÊF iúu STÂ-di RÁRD, iúu uêl PÉS dhí eg-ZÉM)</span><span class="details-translation">Se você estudar muito, você passará na prova.</span></td>
+                        </tr>
+                        <!-- Frase 3 -->
+                        <tr>
+                            <td>She <span class="example-word">will miss</span> the bus if she <span class="example-word">doesn't hurry</span>. <button class="audio-btn-inline" onclick="playAudio('She will miss the bus if she doesn\'t hurry.')">🔊</button></td>
+                            <td class="details-cell"><span class="ipa-symbol">/ʃiː wɪl mɪs ðə bʌs ɪf ʃiː ˈdʌznt ˈhɜːri/</span><br><span class="character-portuguese-phonetics">(XÍI uêl MÊS dhã BÂS ÊF xíi DÂ-zãnt RÃ-ri)</span><span class="details-translation">Ela perderá o ônibus se ela não se apressar.</span></td>
+                        </tr>
+                        <!-- Frase 4 -->
+                        <tr>
+                            <td>If I <span class="example-word">see</span> him, I <span class="example-word">will tell</span> him the news. <button class="audio-btn-inline" onclick="playAudio('If I see him, I will tell him the news.')">🔊</button></td>
+                            <td class="details-cell"><span class="ipa-symbol">/ɪf aɪ siː ɪm aɪ wɪl tel ɪm ðə nuːz/</span><br><span class="character-portuguese-phonetics">(ÊF ái SÍI îm, ái uêl TÉL îm dhã NÚUZ)</span><span class="details-translation">Se eu o vir, contarei a ele as novidades.</span></td>
+                        </tr>
+                        <!-- Frase 5 -->
+                        <tr>
+                            <td>We <span class="example-word">will go</span> to the beach if the weather <span class="example-word">is</span> good. <button class="audio-btn-inline" onclick="playAudio('We will go to the beach if the weather is good.')">🔊</button></td>
+                            <td class="details-cell"><span class="ipa-symbol">/wiː wɪl ɡoʊ tu ðə biːtʃ ɪf ðə ˈweðər ɪz ɡʊd/</span><br><span class="character-portuguese-phonetics">(UÍI uêl GÔU tu dhã BÍITCH ÊF dhã UÉ-dhãr ÊZ GÚD)</span><span class="details-translation">Nós iremos à praia se o tempo estiver bom.</span></td>
+                        </tr>
+                        <!-- Frase 6 -->
+                        <tr>
+                            <td>If they <span class="example-word">don't leave</span> now, they <span class="example-word">will be</span> late. <button class="audio-btn-inline" onclick="playAudio('If they don\'t leave now, they will be late.')">🔊</button></td>
+                            <td class="details-cell"><span class="ipa-symbol">/ɪf ðeɪ doʊnt liːv naʊ ðeɪ wɪl biː leɪt/</span><br><span class="character-portuguese-phonetics">(ÊF dhêi DÔUNT LÍIV NÁU, dhêi uêl BÍI LÊIT)</span><span class="details-translation">Se eles não saírem agora, eles se atrasarão.</span></td>
+                        </tr>
+                        <!-- Frase 7 -->
+                        <tr>
+                            <td>I <span class="example-word">will cook</span> dinner if you <span class="example-word">wash</span> the dishes. <button class="audio-btn-inline" onclick="playAudio('I will cook dinner if you wash the dishes.')">🔊</button></td>
+                            <td class="details-cell"><span class="ipa-symbol">/aɪ wɪl kʊk ˈdɪnər ɪf juː wɑːʃ ðə ˈdɪʃɪz/</span><br><span class="character-portuguese-phonetics">(ÁI uêl CÚK DÊ-nãr ÊF iúu UÓSH dhã DÊ-shêz)</span><span class="details-translation">Eu farei o jantar se você lavar a louça.</span></td>
+                        </tr>
+                        <!-- Frase 8 -->
+                        <tr>
+                            <td>If he <span class="example-word">calls</span>, <span class="example-word">will</span> you <span class="example-word">answer</span>? <button class="audio-btn-inline" onclick="playAudio('If he calls, will you answer?')">🔊</button></td>
+                            <td class="details-cell"><span class="ipa-symbol">/ɪf hiː kɔːlz wɪl juː ˈænsər/</span><br><span class="character-portuguese-phonetics">(ÊF ríi CÓLZ, uêl iúu ÉN-sãr?)</span><span class="details-translation">Se ele ligar, você atenderá?</span></td>
+                        </tr>
+                        <!-- Frase 9 -->
+                        <tr>
+                            <td>If you <span class="example-word">drop</span> that glass, it <span class="example-word">will break</span>. <button class="audio-btn-inline" onclick="playAudio('If you drop that glass, it will break.')">🔊</button></td>
+                            <td class="details-cell"><span class="ipa-symbol">/ɪf juː drɑːp ðæt ɡlæs ɪt wɪl breɪk/</span><br><span class="character-portuguese-phonetics">(ÊF iúu DRÓP DHÉT GLÉS, êt uêl BRÊIK)</span><span class="details-translation">Se você derrubar aquele copo, ele quebrará.</span></td>
+                        </tr>
+                        <!-- Frase 10 -->
+                        <tr>
+                            <td>If you <span class="example-word">eat</span> too much candy, you <span class="example-word">will feel</span> sick. <button class="audio-btn-inline" onclick="playAudio('If you eat too much candy, you will feel sick.')">🔊</button></td>
+                            <td class="details-cell"><span class="ipa-symbol">/ɪf juː iːt tuː mʌtʃ ˈkændi juː wɪl fiːl sɪk/</span><br><span class="character-portuguese-phonetics">(ÊF iúu ÍIT TÚU MÂTCH KÉN-di, iúu uêl FÍIL SÊK)</span><span class="details-translation">Se você comer muito doce, você se sentirá mal.</span></td>
+                        </tr>
+                        <!-- Frase 11 -->
+                        <tr>
+                            <td>If I <span class="example-word">finish</span> my work early, I <span class="example-word">will join</span> you. <button class="audio-btn-inline" onclick="playAudio('If I finish my work early, I will join you.')">🔊</button></td>
+                            <td class="details-cell"><span class="ipa-symbol">/ɪf aɪ ˈfɪnɪʃ maɪ wɜːrk ˈɜːrli aɪ wɪl dʒɔɪn juː/</span><br><span class="character-portuguese-phonetics">(ÊF ái FÊ-nêsh mái UÃRK ÃR-li, ái uêl DJÓIN iúu)</span><span class="details-translation">Se eu terminar meu trabalho cedo, eu me juntarei a vocês.</span></td>
+                        </tr>
+                        <!-- Frase 12 -->
+                        <tr>
+                            <td>If they <span class="example-word">invite</span> us, we <span class="example-word">can go</span> to the event. <button class="audio-btn-inline" onclick="playAudio('If they invite us, we can go to the event.')">🔊</button></td>
+                            <td class="details-cell"><span class="ipa-symbol">/ɪf ðeɪ ɪnˈvaɪt ʌs wiː kæn ɡoʊ tu ði ɪˈvent/</span><br><span class="character-portuguese-phonetics">(ÊF dhêi în-VÁIT âs, uíi KÉN GÔU tu dhí i-VÉNT)</span><span class="details-translation">Se eles nos convidarem, nós podemos ir ao evento.</span></td>
+                        </tr>
+                        <!-- Frase 13 -->
+                        <tr>
+                            <td>If the weather <span class="example-word">is</span> bad, the trip <span class="example-word">might be</span> canceled. <button class="audio-btn-inline" onclick="playAudio('If the weather is bad, the trip might be canceled.')">🔊</button></td>
+                            <td class="details-cell"><span class="ipa-symbol">/ɪf ðə ˈweðər ɪz bæd ðə trɪp maɪt biː ˈkænsəld/</span><br><span class="character-portuguese-phonetics">(ÊF dhã UÉ-dhãr êz BÉD, dhã TRÊP MÁIT bíi KÉN-sõld)</span><span class="details-translation">Se o tempo estiver ruim, a viagem pode ser cancelada.</span></td>
+                        </tr>
+                        <!-- Frase 14 -->
+                        <tr>
+                            <td>You <span class="example-word">should see</span> a doctor if you <span class="example-word">feel</span> sick. <button class="audio-btn-inline" onclick="playAudio('You should see a doctor if you feel sick.')">🔊</button></td>
+                            <td class="details-cell"><span class="ipa-symbol">/juː ʃəd siː ə ˈdɑːktər ɪf juː fiːl sɪk/</span><br><span class="character-portuguese-phonetics">(IÚU xãd SÍI ã DÓK-tãr êf iúu FÍIL SÊK)</span><span class="details-translation">Você deveria ver um médico se você se sentir doente.</span></td>
+                        </tr>
+                        <!-- Frase 15 -->
+                        <tr>
+                            <td>If she <span class="example-word">passes</span> the interview, she <span class="example-word">will get</span> the job. <button class="audio-btn-inline" onclick="playAudio('If she passes the interview, she will get the job.')">🔊</button></td>
+                            <td class="details-cell"><span class="ipa-symbol">/ɪf ʃiː ˈpæsɪz ði ˈɪntərvjuː ʃiː wɪl ɡet ðə dʒɑːb/</span><br><span class="character-portuguese-phonetics">(ÊF xíi PÉ-sêz dhí ÊN-tãr-viu, xíi uêl GUÉT dhã DJÓB)</span><span class="details-translation">Se ela passar na entrevista, ela conseguirá o emprego.</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section id="comparacao-zero-first">
+            <h3>26.3 Zero vs. First Conditional: Qual a diferença? <span class="emoji-small">🆚</span></h3>
+            <p>A principal diferença está na <strong>probabilidade e especificidade</strong>.</p>
+            <div class="table-responsive-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Tipo</th>
+                            <th>Foco</th>
+                            <th>Exemplo</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Zero</strong></td>
+                            <td>Verdades gerais, leis da física. Acontece <strong>sempre</strong>.</td>
+                            <td>If I <strong>eat</strong> too much, I <strong>feel</strong> sick. <br><small>(Sempre que como demais, me sinto mal.)</small></td>
+                        </tr>
+                        <tr>
+                            <td><strong>First</strong></td>
+                            <td>Situação específica no futuro. Acontece <strong>nesta ocasião</strong>.</td>
+                            <td>If I <strong>eat</strong> this cake, I <strong>will feel</strong> sick. <br><small>(Se eu comer este bolo agora, vou me sentir mal - situação específica.)</small></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section id="topic-extra-unless">
+            <h3>26.4 Tópico Extra: Variações Importantes <span class="emoji-small">➕💡</span></h3>
+            
+            <h4>1. "Unless" (A menos que / Se não)</h4>
+            <p>Podemos usar <strong>"Unless"</strong> no lugar de <strong>"If... not"</strong>. Isso torna a frase mais elegante.</p>
+            <ul>
+                <li><strong>If</strong> you <strong>don't</strong> hurry, you will miss the bus. <br>
+                    <small>(Se você não se apressar...)</small>
+                </li>
+                <li><strong>Unless</strong> you hurry, you will miss the bus. <br>
+                    <small>(A menos que você se apresse...)</small>
+                    <button class="audio-btn-inline" onclick="playAudio('Unless you hurry, you will miss the bus.')">🔊</button>
+                </li>
+            </ul>
+
+            <h4>2. Imperativos no First Conditional</h4>
+            <p>No First Conditional, em vez de "will", podemos usar um <strong>Imperativo</strong> (ordem ou pedido) na oração principal.</p>
+            <ul>
+                <li>If you see him, <strong>tell</strong> him to call me. <button class="audio-btn-inline" onclick="playAudio('If you see him, tell him to call me.')">🔊</button><br>
+                    <small>(Se você o vir, diga a ele para me ligar.)</small>
+                </li>
+                <li>If you are tired, <strong>go</strong> to bed. <button class="audio-btn-inline" onclick="playAudio('If you are tired, go to bed.')">🔊</button><br>
+                    <small>(Se você estiver cansado, vá para a cama.)</small>
+                </li>
+            </ul>
+        </section>
+
+        <section id="vocabulario">
+            <h3>Vocabulário da Aula: Condições e Natureza 📚</h3>
+            <p>Palavras essenciais para construir suas condicionais.</p>
+            
+            <div class="vocab-grid">
+                <!-- Verbos -->
+                <div class="vocab-item"><div class="vocab-text"><span class="vocab-en">Boil</span><span class="vocab-ipa">/bɔɪl/</span><span class="vocab-pt">FERVER</span></div><button class="audio-btn-round" onclick="playAudio('Boil')">🔊</button></div>
+                <div class="vocab-item"><div class="vocab-text"><span class="vocab-en">Melt</span><span class="vocab-ipa">/melt/</span><span class="vocab-pt">DERRETER</span></div><button class="audio-btn-round" onclick="playAudio('Melt')">🔊</button></div>
+                <div class="vocab-item"><div class="vocab-text"><span class="vocab-en">Freeze</span><span class="vocab-ipa">/friːz/</span><span class="vocab-pt">CONGELAR</span></div><button class="audio-btn-round" onclick="playAudio('Freeze')">🔊</button></div>
+                <div class="vocab-item"><div class="vocab-text"><span class="vocab-en">Heat</span><span class="vocab-ipa">/hiːt/</span><span class="vocab-pt">AQUECER</span></div><button class="audio-btn-round" onclick="playAudio('Heat')">🔊</button></div>
+                <div class="vocab-item"><div class="vocab-text"><span class="vocab-en">Rain</span><span class="vocab-ipa">/reɪn/</span><span class="vocab-pt">CHOVER</span></div><button class="audio-btn-round" onclick="playAudio('Rain')">🔊</button></div>
+                <div class="vocab-item"><div class="vocab-text"><span class="vocab-en">Snow</span><span class="vocab-ipa">/snoʊ/</span><span class="vocab-pt">NEVAR</span></div><button class="audio-btn-round" onclick="playAudio('Snow')">🔊</button></div>
+                <div class="vocab-item"><div class="vocab-text"><span class="vocab-en">Hurry</span><span class="vocab-ipa">/ˈhɜːri/</span><span class="vocab-pt">APRESSAR-SE</span></div><button class="audio-btn-round" onclick="playAudio('Hurry')">🔊</button></div>
+                <div class="vocab-item"><div class="vocab-text"><span class="vocab-en">Miss</span><span class="vocab-ipa">/mɪs/</span><span class="vocab-pt">PERDER (TRANSPORTE)</span></div><button class="audio-btn-round" onclick="playAudio('Miss')">🔊</button></div>
+                <div class="vocab-item"><div class="vocab-text"><span class="vocab-en">Catch</span><span class="vocab-ipa">/kætʃ/</span><span class="vocab-pt">PEGAR (TRANSPORTE)</span></div><button class="audio-btn-round" onclick="playAudio('Catch')">🔊</button></div>
+                <div class="vocab-item"><div class="vocab-text"><span class="vocab-en">Pass</span><span class="vocab-ipa">/pæs/</span><span class="vocab-pt">PASSAR (PROVA)</span></div><button class="audio-btn-round" onclick="playAudio('Pass')">🔊</button></div>
+                <div class="vocab-item"><div class="vocab-text"><span class="vocab-en">Fail</span><span class="vocab-ipa">/feɪl/</span><span class="vocab-pt">REPROVAR / FALHAR</span></div><button class="audio-btn-round" onclick="playAudio('Fail')">🔊</button></div>
+                <div class="vocab-item"><div class="vocab-text"><span class="vocab-en">Wait</span><span class="vocab-ipa">/weɪt/</span><span class="vocab-pt">ESPERAR</span></div><button class="audio-btn-round" onclick="playAudio('Wait')">🔊</button></div>
+                <div class="vocab-item"><div class="vocab-text"><span class="vocab-en">Stay</span><span class="vocab-ipa">/steɪ/</span><span class="vocab-pt">FICAR</span></div><button class="audio-btn-round" onclick="playAudio('Stay')">🔊</button></div>
+                <div class="vocab-item"><div class="vocab-text"><span class="vocab-en">Leave</span><span class="vocab-ipa">/liːv/</span><span class="vocab-pt">SAIR / PARTIR</span></div><button class="audio-btn-round" onclick="playAudio('Leave')">🔊</button></div>
+                <div class="vocab-item"><div class="vocab-text"><span class="vocab-en">Press</span><span class="vocab-ipa">/pres/</span><span class="vocab-pt">PRESSIONAR</span></div><button class="audio-btn-round" onclick="playAudio('Press')">🔊</button></div>
+                <div class="vocab-item"><div class="vocab-text"><span class="vocab-en">Touch</span><span class="vocab-ipa">/tʌtʃ/</span><span class="vocab-pt">TOCAR</span></div><button class="audio-btn-round" onclick="playAudio('Touch')">🔊</button></div>
+                <div class="vocab-item"><div class="vocab-text"><span class="vocab-en">Mix</span><span class="vocab-ipa">/mɪks/</span><span class="vocab-pt">MISTURAR</span></div><button class="audio-btn-round" onclick="playAudio('Mix')">🔊</button></div>
+                <div class="vocab-item"><div class="vocab-text"><span class="vocab-en">Get</span><span class="vocab-ipa">/ɡet/</span><span class="vocab-pt">FICAR / OBTER</span></div><button class="audio-btn-round" onclick="playAudio('Get')">🔊</button></div>
+                
+                <!-- Substantivos e Outros -->
+                <div class="vocab-item"><div class="vocab-text"><span class="vocab-en">Ice</span><span class="vocab-ipa">/aɪs/</span><span class="vocab-pt">GELO</span></div><button class="audio-btn-round" onclick="playAudio('Ice')">🔊</button></div>
+                <div class="vocab-item"><div class="vocab-text"><span class="vocab-en">Steam</span><span class="vocab-ipa">/stiːm/</span><span class="vocab-pt">VAPOR</span></div><button class="audio-btn-round" onclick="playAudio('Steam')">🔊</button></div>
+                <div class="vocab-item"><div class="vocab-text"><span class="vocab-en">Degrees</span><span class="vocab-ipa">/dɪˈɡriːz/</span><span class="vocab-pt">GRAUS</span></div><button class="audio-btn-round" onclick="playAudio('Degrees')">🔊</button></div>
+                <div class="vocab-item"><div class="vocab-text"><span class="vocab-en">Temperature</span><span class="vocab-ipa">/ˈtemprətʃər/</span><span class="vocab-pt">TEMPERATURA</span></div><button class="audio-btn-round" onclick="playAudio('Temperature')">🔊</button></div>
+                <div class="vocab-item"><div class="vocab-text"><span class="vocab-en">Umbrella</span><span class="vocab-ipa">/ʌmˈbrelə/</span><span class="vocab-pt">GUARDA-CHUVA</span></div><button class="audio-btn-round" onclick="playAudio('Umbrella')">🔊</button></div>
+                <div class="vocab-item"><div class="vocab-text"><span class="vocab-en">Coat</span><span class="vocab-ipa">/koʊt/</span><span class="vocab-pt">CASACO</span></div><button class="audio-btn-round" onclick="playAudio('Coat')">🔊</button></div>
+                <div class="vocab-item"><div class="vocab-text"><span class="vocab-en">Traffic</span><span class="vocab-ipa">/ˈtræfɪk/</span><span class="vocab-pt">TRÂNSITO</span></div><button class="audio-btn-round" onclick="playAudio('Traffic')">🔊</button></div>
+                <div class="vocab-item"><div class="vocab-text"><span class="vocab-en">Exam</span><span class="vocab-ipa">/ɪɡˈzæm/</span><span class="vocab-pt">PROVA</span></div><button class="audio-btn-round" onclick="playAudio('Exam')">🔊</button></div>
+                <div class="vocab-item"><div class="vocab-text"><span class="vocab-en">Fact</span><span class="vocab-ipa">/fækt/</span><span class="vocab-pt">FATO</span></div><button class="audio-btn-round" onclick="playAudio('Fact')">🔊</button></div>
+                <div class="vocab-item"><div class="vocab-text"><span class="vocab-en">Truth</span><span class="vocab-ipa">/truːθ/</span><span class="vocab-pt">VERDADE</span></div><button class="audio-btn-round" onclick="playAudio('Truth')">🔊</button></div>
+                <div class="vocab-item"><div class="vocab-text"><span class="vocab-en">Consequence</span><span class="vocab-ipa">/ˈkɑːnsɪkwens/</span><span class="vocab-pt">CONSEQUÊNCIA</span></div><button class="audio-btn-round" onclick="playAudio('Consequence')">🔊</button></div>
+                <div class="vocab-item"><div class="vocab-text"><span class="vocab-en">Weather</span><span class="vocab-ipa">/ˈweðər/</span><span class="vocab-pt">CLIMA / TEMPO</span></div><button class="audio-btn-round" onclick="playAudio('Weather')">🔊</button></div>
+                <div class="vocab-item"><div class="vocab-text"><span class="vocab-en">If</span><span class="vocab-ipa">/ɪf/</span><span class="vocab-pt">SE</span></div><button class="audio-btn-round" onclick="playAudio('If')">🔊</button></div>
+                <div class="vocab-item"><div class="vocab-text"><span class="vocab-en">Unless</span><span class="vocab-ipa">/ənˈles/</span><span class="vocab-pt">A MENOS QUE</span></div><button class="audio-btn-round" onclick="playAudio('Unless')">🔊</button></div>
+                <div class="vocab-item"><div class="vocab-text"><span class="vocab-en">When</span><span class="vocab-ipa">/wen/</span><span class="vocab-pt">QUANDO</span></div><button class="audio-btn-round" onclick="playAudio('When')">🔊</button></div>
+                <div class="vocab-item"><div class="vocab-text"><span class="vocab-en">Tomorrow</span><span class="vocab-ipa">/təˈmɑːroʊ/</span><span class="vocab-pt">AMANHÃ</span></div><button class="audio-btn-round" onclick="playAudio('Tomorrow')">🔊</button></div>
+            </div>
+        </section>
+
+        <section id="tarefa-extra" class="extra-task">
+            <h3>Tarefa Extra ✍️</h3>
+            <h4>Translate the Text</h4>
+            <p>Read the text below about planning a weekend trip. Pay attention to the Zero and First Conditionals. Then, try to translate it into Portuguese.</p>
+            <p>
+                When my friends and I plan a weekend trip, we always check the weather first. This is a general rule for us because if the weather <span class="example-word">is</span> bad, we usually <span class="example-word">change</span> our plans. If it <span class="example-word">snows</span> in the mountains, the roads <span class="example-word">get</span> very dangerous. That's a scientific fact. Also, when you <span class="example-word">don't prepare</span> for a trip properly, things often <span class="example-word">go</span> wrong.
+                <br><br>
+                For this upcoming weekend, our plan depends completely on the forecast. If the forecast <span class="example-word">is</span> good, we <span class="example-word">will go</span> hiking. The trail is beautiful, but it gets muddy if it <span class="example-word">rains</span>. So, if we <span class="example-word">see</span> dark clouds on Saturday morning, we <span class="example-word">will choose</span> an indoor activity instead. We will probably go to the local museum.
+                <br><br>
+                My friend, Ana, is in charge of the food. If she <span class="example-word">cooks</span>, everyone <span class="example-word">is</span> always happy because her food is delicious. For this trip, if we <span class="example-word">go</span> hiking, she <span class="example-word">will prepare</span> sandwiches and snacks. If we <span class="example-word">stay</span> in the city, we <span class="example-word">will try</span> that new restaurant downtown.
+                <br><br>
+                I am responsible for transportation. If my car <span class="example-word">is</span> ready from the mechanic, I <span class="example-word">will drive</span>. If it <span class="example-word">isn't</span> ready, we <span class="example-word">will have to</span> take the train. The train is a good option, but if we <span class="example-word">take</span> it, we <span class="example-word">won't be</span> as flexible with our schedule.
+                <br><br>
+                Ultimately, if we <span class="example-word">plan</span> everything carefully, we <span class="example-word">will have</span> a great time, no matter the weather. When friends <span class="example-word">travel</span> together, the most important thing <span class="example-word">is</span> the company. If we <span class="example-word">are</span> together, it <span class="example-word">will be</span> a memorable weekend.
+            </p>
+            
+            <hr style="border: 0; border-top: 1px solid #dcdde1; margin: 20px 0;">
+            
+            <h4>Quiz</h4>
+            <p>According to the text, what will happen if the weather is good for the weekend?</p>
+            <ol class="quiz-options">
+                <li>They will stay home.</li>
+                <li>They will go to the local museum.</li>
+                <li>They will cancel the trip.</li>
+                <li>They will go hiking.</li>
+                <li>They will take the train to another city.</li>
+            </ol>
+            
+            <details class="gabarito">
+                <summary>Ver Resposta do Quiz</summary>
+                <div class="gabarito-content">
+                    Resposta Correta: <strong>4. They will go hiking.</strong>
+                </div>
+            </details>
+        </section>
+
+        <section id="exercicios-finais">
+            <h3>Exercícios Práticos Finais 📝</h3>
+            <div class="secao-exercicios">
+                <h4>Parte 1: Zero Conditional (Fatos) ou First Conditional (Futuro)?</h4>
+                <p>Identifique se a frase é Zero (Z) ou First (F).</p>
+                <ol class="exercise-list">
+                    <li>If you heat ice, it melts. (<span class="fill-in-blank"></span>)</li>
+                    <li>If she studies hard, she will get good grades. (<span class="fill-in-blank"></span>)</li>
+                    <li>When I am sad, I listen to music. (<span class="fill-in-blank"></span>)</li>
+                    <li>We will miss the train if we don't leave now. (<span class="fill-in-blank"></span>)</li>
+                </ol>
+
+                <h4>Parte 2: Complete as Frases</h4>
+                <p>Complete com a forma correta do verbo entre parênteses.</p>
+                <ol class="exercise-list">
+                    <li>If it <span class="fill-in-blank"></span> (rain) tomorrow, we <span class="fill-in-blank"></span> (stay) home.</li>
+                    <li>Water <span class="fill-in-blank"></span> (boil) if you <span class="fill-in-blank"></span> (heat) it to 100°C.</li>
+                    <li>If I <span class="fill-in-blank"></span> (see) her, I <span class="fill-in-blank"></span> (tell) her you called.</li>
+                </ol>
+            </div>
+            
+            <details class="gabarito">
+                <summary>Ver Gabarito dos Exercícios</summary>
+                <div class="gabarito-content">
+                    <p><strong>Respostas da Parte 1:</strong> 1. Z, 2. F, 3. Z, 4. F.</p>
+                    <p><strong>Respostas da Parte 2:</strong> 1. rains, will stay/'ll stay, 2. boils, heat, 3. see, will tell/'ll tell.</p>
+                </div>
+            </details>
+        </section>
+
+        <section id="conclusao">
+            <h3>Conclusão 🥳</h3>
+            <p>Parabéns por concluir a Aula 26! Você aprendeu sobre o Zero Conditional para falar de fatos e verdades, e o First Conditional para falar sobre situações futuras reais ou prováveis e seus resultados. Essas estruturas são fundamentais para expressar lógica e planejar.</p>
+            <p>Continue praticando a formação dessas frases para usá-las com confiança.</p>
+            <p>Na Aula 27: "Situações Imaginárias – Condicional Tipo 2 (O Futuro Irreal)", vamos entrar no mundo da imaginação e aprender a falar sobre situações hipotéticas. Até lá!</p>
+        </section>
+
+        <!-- Botão Navegação Rodapé -->
+        <button class="nav-btn" onclick="alert('Voltar ao Menu Principal')">⬅ Voltar ao Menu</button>
+    </div>
+
+    <!-- SCRIPT DE ÁUDIO OTIMIZADO -->
+    <script>
+        let voices = [];
+        
+        // Função para carregar vozes de forma robusta em mobile/desktop
+        function loadVoices() {
+            voices = window.speechSynthesis.getVoices();
+        }
+
+        // Tenta carregar imediatamente
+        loadVoices();
+
+        // Garante o carregamento assíncrono (crítico para Android/Chrome)
+        if (window.speechSynthesis.onvoiceschanged !== undefined) {
+            window.speechSynthesis.onvoiceschanged = loadVoices;
+        }
+
+        function playAudio(text) {
+            if ('speechSynthesis' in window) {
+                // Cancela qualquer áudio anterior para não sobrepor
+                window.speechSynthesis.cancel();
+
+                const utterance = new SpeechSynthesisUtterance(text);
+                utterance.rate = 0.85; // Velocidade um pouco mais lenta para estudo
+                utterance.pitch = 1;
+
+                // Lógica de seleção de voz para evitar sotaque "aportuguesado"
+                if (voices.length === 0) loadVoices();
+
+                // 1. Tenta vozes "Premium" ou "Google" (comuns no Android)
+                let targetVoice = voices.find(voice => 
+                    (voice.name.includes('Google') || voice.name.includes('Premium') || voice.name.includes('Samantha')) 
+                    && voice.lang.includes('en-US')
+                );
+
+                // 2. Se não achar, tenta qualquer voz en-US
+                if (!targetVoice) {
+                    targetVoice = voices.find(voice => voice.lang === 'en-US');
+                }
+
+                // 3. Se ainda não achar, tenta qualquer voz inglesa (en-GB, etc)
+                if (!targetVoice) {
+                    targetVoice = voices.find(voice => voice.lang.startsWith('en'));
+                }
+
+                if (targetVoice) {
+                    utterance.voice = targetVoice;
+                    // Força o lang caso a voz não tenha definido (bug comum em alguns browsers)
+                    utterance.lang = targetVoice.lang; 
+                } else {
+                    utterance.lang = 'en-US'; // Fallback final
+                }
+
+                window.speechSynthesis.speak(utterance);
+            } else {
+                alert("Desculpe, seu navegador não suporta reprodução de áudio.");
+            }
+        }
+    </script>
+</body>
+</html>
