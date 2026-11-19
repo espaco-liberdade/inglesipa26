@@ -3,714 +3,1909 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Aula 26: "E Se...?" – Condicionais Zero e Tipo 1</title>
+    <title>Aula 26: "E Se...?" – Condicionais Zero e Tipo 1 | Método IPA</title>
+
+    <!-- Fontes do Google -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
+
     <style>
-        /* --- RESET E BASE --- */
-        * { box-sizing: border-box; }
+        /* --- VARIÁVEIS E BASE --- */
+        :root {
+            --navy: #20344b;
+            --blue: #2980b9;
+            --teal: #16a085;
+            --purple: #8e44ad;
+            --amber: #d35400;
+            --gold-bg: #fffbeb;
+            --gold-border: #f59e0b;
+            --ink: #243140;
+            --muted: #64748b;
+            --line: #e2e8f0;
+            --bg: #edf2f7;
+            --paper: #ffffff;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
         body {
             font-family: 'Inter', sans-serif;
             line-height: 1.6;
-            margin: 0;
-            padding: 0;
-            background-color: #f0f2f5;
-            color: #333;
+            background-color: var(--bg);
+            color: var(--ink);
             -webkit-font-smoothing: antialiased;
+            padding: 20px 10px 90px 10px;
         }
 
         .container {
-            max-width: 800px;
+            position: relative;
+            max-width: 1050px;
             margin: 0 auto;
-            background: #fff;
-            padding: 20px 15px; /* Margens seguras para mobile */
-            min-height: 100vh;
-            box-shadow: 0 0 20px rgba(0,0,0,0.05);
+            background: var(--paper);
+            padding: 30px;
+            border-radius: 14px;
+            box-shadow: 0 5px 24px rgba(32, 52, 75, 0.09);
+            overflow: visible;
+        }
+
+        /* --- CAMADA VETORIAL DE DESENHO (CANETA / MARCA-TEXTO SOBRE O LIVRO) --- */
+        #drawLayer {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 40;
+            pointer-events: none; /* Desativado por padrão para permitir cliques e rolagem */
+            overflow: visible;
+            border-radius: 14px;
+        }
+
+        #drawLayer.active-pen {
+            pointer-events: auto;
+            touch-action: none; /* Impede a tela de rolar ao desenhar com o dedo no celular */
+            cursor: crosshair;
+        }
+
+        #drawLayer.active-eraser {
+            pointer-events: auto;
+            touch-action: none;
+            cursor: cell;
+        }
+
+        #drawLayer.hidden-strokes {
+            opacity: 0;
+        }
+
+        .stroke-highlighter {
+            mix-blend-mode: multiply;
+        }
+
+        .stroke-eraser-hover {
+            opacity: 0.25 !important;
         }
 
         /* --- TIPOGRAFIA --- */
         h1 {
-            color: #2c3e50;
+            color: var(--navy);
             text-align: center;
-            font-size: 1.5rem;
-            margin-bottom: 25px;
+            font-size: 1.85rem;
+            margin-bottom: 18px;
             padding-bottom: 15px;
-            border-bottom: 3px solid #3498db;
+            border-bottom: 3px solid var(--blue);
             line-height: 1.3;
         }
-        
-        h2, h3, h4 { color: #2c3e50; margin-top: 25px; }
-        h3 { color: #34495e; font-size: 1.25rem; border-left: 4px solid #3498db; padding-left: 10px; }
-        h4 { color: #c0392b; font-size: 1.1rem; margin-bottom: 10px; }
-        
-        p, li { font-size: 1rem; margin-bottom: 10px; }
-        
-        .emoji-large { font-size: 1.5rem; }
-        .emoji-small { font-size: 1.2rem; }
 
-        /* --- DESTAQUES E CAIXAS --- */
-        .theme-intro, .nota-gramatical, .nota-dica, .secao-exercicios, .extra-task {
-            padding: 15px;
-            margin: 15px 0;
-            border-radius: 8px;
-            border-left: 5px solid transparent;
-        }
-
-        .theme-intro { background-color: #eaf2f8; border-left-color: #3498db; }
-        .nota-gramatical { background-color: #ecf0f1; border-left-color: #f39c12; }
-        .nota-dica { background-color: #e8f6f3; border-left-color: #16a085; }
-        .extra-task { background-color: #f5eef8; border-left-color: #9b59b6; }
-        .secao-exercicios { background-color: #fff8e1; border-left-color: #f39c12; }
-
-        .example-word { color: #2980b9; font-weight: 700; }
-        
-        /* --- ESTILOS DE IPA E PRONÚNCIA --- */
-        code, .ipa-symbol {
-            font-family: 'Roboto Mono', monospace;
-            background-color: #f1f1f1;
-            padding: 2px 4px;
-            border-radius: 4px;
-            color: #e74c3c;
-            font-size: 0.9em;
-        }
-        
-        .character-portuguese-phonetics {
+        .subtitle {
             display: block;
-            color: #27ae60;
-            font-style: italic;
-            font-size: 0.85em;
-            margin-top: 2px;
+            font-size: 0.98rem;
+            font-weight: 500;
+            color: var(--muted);
+            margin-top: 6px;
         }
 
-        /* --- BOTÃO DE NAVEGAÇÃO --- */
-        .nav-btn {
-            display: block;
-            width: 100%;
-            background-color: #34495e;
-            color: white;
-            text-align: center;
-            padding: 12px;
-            margin: 10px 0;
-            text-decoration: none;
-            border-radius: 8px;
-            font-weight: bold;
+        h2 {
+            color: var(--navy);
+            margin-top: 36px;
+            margin-bottom: 14px;
+            font-size: 1.45rem;
+            border-bottom: 2px solid #ebf5fb;
+            padding-bottom: 8px;
+            page-break-after: avoid;
+        }
+
+        h3 {
+            color: #1f618d;
+            font-size: 1.22rem;
+            margin-top: 28px;
+            margin-bottom: 12px;
+            border-left: 4px solid var(--blue);
+            padding-left: 12px;
+            page-break-after: avoid;
+        }
+
+        h4 {
+            color: #c0392b;
+            font-size: 1.05rem;
+            margin: 16px 0 10px 0;
+        }
+
+        p, li { font-size: 0.98rem; margin-bottom: 10px; color: #374151; }
+        ul, ol { padding-left: 22px; margin-bottom: 14px; }
+
+        .emoji-large { font-size: 1.35rem; }
+        .emoji-small { font-size: 1.15rem; }
+
+        /* --- BARRAS DE AÇÃO (TOPO, NOTAS E RODAPÉ) --- */
+        .top-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 18px;
+            position: relative;
+            z-index: 45;
+        }
+
+        .nav-btn, .pdf-btn {
+            flex: 1;
+            min-width: 220px;
             border: none;
+            border-radius: 8px;
+            padding: 13px 16px;
+            font-weight: 700;
+            font-size: 0.96rem;
+            cursor: pointer;
+            transition: opacity 0.2s, transform 0.1s;
+            font-family: 'Inter', sans-serif;
+        }
+        .nav-btn:hover, .pdf-btn:hover { opacity: 0.92; }
+        .nav-btn:active, .pdf-btn:active { transform: scale(0.99); }
+        .nav-btn { background-color: var(--navy); color: #fff; }
+        .pdf-btn { background-color: var(--teal); color: #fff; }
+
+        .notes-toolbar {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 8px;
+            background: #f8fafc;
+            border: 1px solid var(--line);
+            border-radius: 10px;
+            padding: 12px 15px;
+            margin: 16px 0 22px 0;
+            position: relative;
+            z-index: 45;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.04);
+        }
+
+        .notes-toolbar-status {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--navy);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin-right: auto;
+        }
+
+        .toolbar-btn {
+            border: 1px solid #cbd5e1;
+            background: #fff;
+            color: var(--navy);
+            border-radius: 7px;
+            padding: 7px 12px;
+            font-size: 0.83rem;
+            font-weight: 700;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+            transition: all 0.15s;
+        }
+        .toolbar-btn:hover { background: #ebf5fb; border-color: var(--blue); color: var(--blue); }
+        .toolbar-btn.danger:hover { background: #fef2f2; border-color: #ef4444; color: #dc2626; }
+        .toolbar-btn.pen-cta {
+            background: linear-gradient(135deg, #2563eb, #1d4ed8);
+            color: #fff;
+            border-color: #1d4ed8;
+        }
+        .toolbar-btn.pen-cta:hover { background: #1e40af; color: #fff; }
+
+        /* --- BARRA FLUTUANTE DA CANETA / MARCA-TEXTO (ESTILO PAINT NO LIVRO) --- */
+        .pen-fab {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 100;
+            background: linear-gradient(135deg, #2563eb, #1d4ed8);
+            color: #fff;
+            border: none;
+            border-radius: 999px;
+            padding: 13px 20px;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.94rem;
+            font-weight: 800;
+            cursor: pointer;
+            box-shadow: 0 8px 24px rgba(37, 99, 235, 0.38);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: transform 0.15s, background 0.2s;
+        }
+        .pen-fab:hover { transform: translateY(-2px); }
+        .pen-fab.is-open { display: none; }
+
+        .pen-dock {
+            position: fixed;
+            bottom: 16px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 100;
+            background: rgba(20, 31, 46, 0.96);
+            color: #fff;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 16px;
+            padding: 10px 14px;
+            box-shadow: 0 12px 32px rgba(0, 0, 0, 0.32);
+            display: none;
+            flex-direction: column;
+            gap: 8px;
+            width: min(96vw, 760px);
+            backdrop-filter: blur(8px);
+        }
+        .pen-dock.open { display: flex; }
+
+        .pen-dock-row {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 7px;
+        }
+
+        .pen-mode-banner {
+            font-size: 0.78rem;
+            color: #fde68a;
+            text-align: center;
+            font-weight: 600;
+        }
+
+        .dock-btn {
+            border: 1px solid rgba(255,255,255,0.2);
+            background: rgba(255,255,255,0.08);
+            color: #f8fafc;
+            border-radius: 8px;
+            padding: 7px 11px;
+            font-size: 0.82rem;
+            font-weight: 700;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+            transition: all 0.15s;
+        }
+        .dock-btn:hover { background: rgba(255,255,255,0.18); }
+        .dock-btn.active {
+            background: #2563eb;
+            border-color: #60a5fa;
+            color: #fff;
+            box-shadow: 0 0 0 2px rgba(96, 165, 250, 0.35);
+        }
+        .dock-btn.active-hl {
+            background: #ca8a04;
+            border-color: #fde047;
+            color: #fff;
+        }
+        .dock-btn.active-er {
+            background: #dc2626;
+            border-color: #fca5a5;
+            color: #fff;
+        }
+        .dock-btn.exit-btn {
+            background: #10b981;
+            border-color: #34d399;
+            color: #052e16;
+        }
+        .dock-btn.exit-btn:hover { background: #34d399; }
+
+        .color-swatch {
+            width: 26px;
+            height: 26px;
+            border-radius: 50%;
+            border: 2px solid rgba(255,255,255,0.45);
+            cursor: pointer;
+            transition: transform 0.15s, border-color 0.15s;
+        }
+        .color-swatch:hover { transform: scale(1.12); }
+        .color-swatch.selected {
+            border: 3px solid #fff;
+            transform: scale(1.18);
+            box-shadow: 0 0 0 2px #3b82f6;
+        }
+
+        .size-pill {
+            border: 1px solid rgba(255,255,255,0.22);
+            background: rgba(255,255,255,0.08);
+            color: #e2e8f0;
+            border-radius: 6px;
+            padding: 4px 8px;
+            font-size: 0.75rem;
+            font-weight: 700;
             cursor: pointer;
         }
-        .nav-btn:hover { background-color: #2c3e50; }
+        .size-pill.selected { background: #fff; color: #0f172a; }
 
-        /* --- TABELAS OTIMIZADAS PARA MOBILE --- */
+        .dock-divider {
+            width: 1px;
+            height: 22px;
+            background: rgba(255,255,255,0.2);
+            margin: 0 2px;
+        }
+
+        /* CONFIRMAÇÃO INLINE (SEM ALERT/CONFIRM) */
+        .inline-confirm {
+            display: none;
+            width: 100%;
+            background: #fef2f2;
+            border: 1px solid #fecaca;
+            border-radius: 8px;
+            padding: 10px 14px;
+            margin-top: 6px;
+            font-size: 0.88rem;
+            color: #991b1b;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .inline-confirm.show { display: flex; }
+        .confirm-yes {
+            background: #dc2626;
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            padding: 6px 12px;
+            font-weight: 700;
+            cursor: pointer;
+            font-size: 0.83rem;
+        }
+        .confirm-no {
+            background: #fff;
+            color: #374151;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+            padding: 6px 12px;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 0.83rem;
+        }
+
+        .toast-banner {
+            display: none;
+            background: #e8f8f5;
+            border: 1px solid #a3e4d7;
+            color: #0e6251;
+            padding: 9px 14px;
+            border-radius: 8px;
+            font-size: 0.88rem;
+            font-weight: 600;
+            margin: 10px 0;
+            text-align: center;
+            position: relative;
+            z-index: 45;
+        }
+        .toast-banner.show { display: block; }
+
+        /* --- CAIXAS DE DESTAQUE --- */
+        .theme-intro, .nota-gramatical, .nota-dica, .secao-exercicios, .extra-task {
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 10px;
+            border-left: 5px solid transparent;
+            page-break-inside: avoid;
+        }
+
+        .theme-intro { background-color: #ebf5fb; border-left-color: var(--blue); }
+        .nota-gramatical { background-color: #fef9e7; border-left-color: #f39c12; }
+        .nota-dica { background-color: #e8f8f5; border-left-color: var(--teal); }
+        .extra-task { background-color: #f5eef8; border-left-color: var(--purple); }
+        .secao-exercicios { background-color: #fff8eb; border-left-color: var(--amber); }
+
+        .example-word {
+            color: var(--blue);
+            font-weight: 700;
+            background: #eaf4fc;
+            padding: 1px 5px;
+            border-radius: 4px;
+        }
+
+        .formula-pill {
+            display: inline-block;
+            background: #20344b;
+            color: #fef08a;
+            font-family: 'Roboto Mono', monospace;
+            font-weight: 700;
+            font-size: 0.92rem;
+            padding: 7px 14px;
+            border-radius: 8px;
+            margin: 6px 0 12px 0;
+        }
+
+        /* --- BLOCO DE OBSERVAÇÕES DO ALUNO (AUTO-SAVE) --- */
+        .obs-box {
+            margin: 18px 0 28px 0;
+            background: var(--gold-bg);
+            border: 1px solid #fde68a;
+            border-left: 5px solid var(--gold-border);
+            border-radius: 10px;
+            padding: 14px 16px;
+            page-break-inside: avoid;
+        }
+
+        .obs-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+
+        .obs-title {
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: #92400e;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .obs-save-badge {
+            font-size: 0.76rem;
+            font-weight: 700;
+            color: #0f766e;
+            background: #ccfbf1;
+            padding: 2px 8px;
+            border-radius: 12px;
+            opacity: 0;
+            transition: opacity 0.25s ease;
+        }
+        .obs-save-badge.visible { opacity: 1; }
+
+        .obs-textarea {
+            width: 100%;
+            min-height: 76px;
+            resize: vertical;
+            padding: 10px 12px;
+            border: 1px solid #fcd34d;
+            border-radius: 8px;
+            background: #ffffff;
+            color: #1f2937;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.93rem;
+            line-height: 1.5;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        .obs-textarea:focus {
+            outline: none;
+            border-color: #d97706;
+            box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.18);
+        }
+
+        .obs-textarea::placeholder { color: #9ca3af; font-style: italic; }
+
+        .obs-print-mirror {
+            display: none;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            font-size: 9.2pt;
+            color: #1f2937;
+            background: #ffffff;
+            border: 1px dashed #d97706;
+            border-radius: 6px;
+            padding: 8px 10px;
+            line-height: 1.45;
+        }
+
+        /* --- IPA, FONÉTICA E BOTÕES DE ÁUDIO --- */
+        code, .ipa-symbol {
+            font-family: 'Roboto Mono', monospace;
+            background-color: #f1f5f9;
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: #c0392b;
+            font-size: 0.85rem;
+            display: inline-block;
+        }
+
+        .character-portuguese-phonetics {
+            display: block;
+            color: #15803d;
+            font-style: italic;
+            font-weight: 600;
+            font-size: 0.86rem;
+            margin-top: 3px;
+        }
+
+        .audio-btn-inline {
+            background: #eef6fc;
+            border: 1px solid #cce3f6;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1rem;
+            width: 32px;
+            height: 32px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            vertical-align: middle;
+            margin-left: 6px;
+            transition: transform 0.1s, background-color 0.2s;
+        }
+        .audio-btn-inline:hover { background: var(--blue); color: #fff; }
+        .audio-btn-inline:active { transform: scale(0.9); }
+
+        .audio-btn-pill {
+            background: #ebf5fb;
+            border: 1px solid #93c5fd;
+            color: #1d4ed8;
+            border-radius: 8px;
+            padding: 6px 12px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+            transition: all 0.15s;
+        }
+        .audio-btn-pill:hover { background: var(--blue); color: #fff; }
+        .audio-btn-pill.stop { background: #dc2626; border-color: #dc2626; color: #fff; }
+
+        /* --- BARRA DE PESQUISA --- */
+        .search-box { margin: 14px 0 18px 0; }
+        .search-input {
+            width: 100%;
+            padding: 11px 15px;
+            font-size: 0.96rem;
+            border: 2px solid #cbd5e1;
+            border-radius: 8px;
+            font-family: 'Inter', sans-serif;
+            transition: border-color 0.2s;
+        }
+        .search-input:focus { outline: none; border-color: var(--blue); }
+
+        /* --- TABELAS --- */
         .table-responsive-wrapper {
             width: 100%;
             overflow-x: auto;
-            margin-bottom: 20px;
-            border-radius: 8px;
-            border: 1px solid #eee;
+            -webkit-overflow-scrolling: touch;
+            margin: 14px 0 22px 0;
+            border-radius: 10px;
+            border: 1px solid var(--line);
+            box-shadow: 0 2px 6px rgba(0,0,0,0.03);
         }
 
         table {
             width: 100%;
             border-collapse: collapse;
-            min-width: 100%; /* Garante que a tabela ocupe o espaço */
+            min-width: 640px;
         }
 
         th {
-            background-color: #34495e;
+            background-color: var(--navy);
             color: white;
-            padding: 10px;
-            font-size: 0.9rem;
+            padding: 12px 14px;
+            font-size: 0.88rem;
             text-align: left;
+            font-weight: 600;
         }
 
         td {
-            padding: 12px 10px;
-            border-bottom: 1px solid #eee;
+            padding: 13px 14px;
+            border-bottom: 1px solid #eef2f6;
             vertical-align: top;
+            font-size: 0.94rem;
         }
 
-        tr:nth-child(even) { background-color: #f9f9f9; }
+        tr:nth-child(even) { background-color: #fafcfe; }
+        tr:hover { background-color: #f0f7ff; }
 
-        /* Estilo especial para empilhar conteúdo na tabela (Tradução/IPA na mesma célula) */
-        .details-cell {
-            font-size: 0.9rem;
-            color: #555;
+        .num-badge {
+            display: inline-block;
+            background: var(--blue);
+            color: #fff;
+            font-weight: 700;
+            font-size: 0.75rem;
+            padding: 2px 7px;
+            border-radius: 12px;
+            margin-right: 6px;
         }
+        .num-badge.teal { background: var(--teal); }
+
+        .sentence-en {
+            font-weight: 600;
+            color: var(--navy);
+            font-size: 1rem;
+        }
+        .sentence-en b {
+            color: #1d4ed8;
+            background: #eff6ff;
+            padding: 0 4px;
+            border-radius: 4px;
+        }
+
         .details-translation {
             display: block;
-            margin-top: 6px;
-            padding-top: 6px;
-            border-top: 1px dashed #ddd;
-            color: #444;
-            font-weight: 500;
+            margin-top: 5px;
+            color: #1f2937;
+            font-weight: 600;
+            font-size: 0.93rem;
         }
 
-        /* --- BOTÃO DE ÁUDIO GERAL --- */
-        .audio-btn-inline {
-            background: none;
-            border: none;
-            cursor: pointer;
-            font-size: 1.2rem;
-            vertical-align: middle;
-            margin-left: 5px;
-            padding: 0 5px;
+        .mini-note {
+            display: block;
+            margin-top: 5px;
+            padding-top: 5px;
+            border-top: 1px dashed #cbd5e1;
+            font-size: 0.82rem;
+            color: #475569;
         }
-        
-        /* --- VOCABULÁRIO: GRID DE CARDS (Mobile First) --- */
+
+        /* --- GRID DE VOCABULÁRIO (46 CARDS) --- */
         .vocab-grid {
             display: grid;
-            grid-template-columns: 1fr; /* 1 coluna no mobile */
-            gap: 15px;
-            margin: 20px 0;
-        }
-
-        @media (min-width: 600px) {
-            .vocab-grid {
-                grid-template-columns: 1fr 1fr; /* 2 colunas em telas maiores */
-            }
+            grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
+            gap: 12px;
+            margin: 16px 0 20px 0;
         }
 
         .vocab-item {
-            background: white;
-            border: 1px solid #e0e0e0;
+            background: #fff;
+            border: 1px solid var(--line);
             border-radius: 10px;
-            padding: 15px;
+            padding: 13px 14px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.02);
-            transition: transform 0.2s;
+            gap: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+            transition: transform 0.15s, border-color 0.15s;
+            page-break-inside: avoid;
         }
-        
-        .vocab-item:active { transform: scale(0.98); background-color: #fdfdfd; }
+        .vocab-item:hover { border-color: var(--blue); transform: translateY(-1px); }
 
-        .vocab-text {
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-        }
-
-        .vocab-en {
-            font-size: 1.1rem;
-            font-weight: 700;
-            color: #2c3e50;
-        }
-
-        .vocab-ipa {
-            font-family: 'Roboto Mono', monospace;
-            font-size: 0.85rem;
-            color: #e67e22; /* Laranja para destaque */
-        }
-
-        .vocab-pt {
-            font-size: 0.8rem;
-            color: #7f8c8d;
-            text-transform: uppercase;
-            font-weight: 600;
-            letter-spacing: 0.5px;
-            margin-top: 2px;
-        }
+        .vocab-text { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+        .vocab-en { font-size: 1.04rem; font-weight: 700; color: var(--navy); }
+        .vocab-ipa { font-family: 'Roboto Mono', monospace; font-size: 0.79rem; color: #c0392b; }
+        .vocab-phon { font-size: 0.8rem; color: #15803d; font-style: italic; font-weight: 600; }
+        .vocab-pt { font-size: 0.78rem; color: var(--muted); text-transform: uppercase; font-weight: 700; letter-spacing: 0.4px; margin-top: 2px; }
 
         .audio-btn-round {
             width: 40px;
             height: 40px;
             border-radius: 50%;
-            background-color: #3498db;
-            color: white;
+            background-color: var(--blue);
+            color: #fff;
             border: none;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.2rem;
+            font-size: 1.1rem;
             cursor: pointer;
             flex-shrink: 0;
-            margin-left: 10px;
-            box-shadow: 0 2px 5px rgba(52, 152, 219, 0.3);
+            box-shadow: 0 2px 6px rgba(41, 128, 185, 0.25);
+            transition: background-color 0.2s, transform 0.1s;
         }
-        
-        .audio-btn-round:active { background-color: #2980b9; }
+        .audio-btn-round:hover { background-color: #1f618d; }
+        .audio-btn-round:active { transform: scale(0.93); }
 
-        /* --- GABARITO E EXERCÍCIOS --- */
-        .fill-in-blank {
-            display: inline-block;
-            min-width: 60px;
-            border-bottom: 2px solid #3498db;
-            text-align: center;
-            color: #3498db;
-            font-weight: bold;
-            padding: 0 5px;
+        /* --- HISTÓRIA E QUIZ INTERATIVO --- */
+        .story-card {
+            background: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            border: 1px solid #e9d5ff;
+            margin: 14px 0 20px 0;
         }
+
+        .story-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 12px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #f3e8ff;
+        }
+
+        .quiz-container {
+            background: #fff;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            padding: 18px;
+            margin-top: 14px;
+            page-break-inside: avoid;
+        }
+
+        .quiz-question { margin-bottom: 16px; padding-bottom: 14px; border-bottom: 1px solid #eee; }
+        .quiz-question:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+
+        .quiz-btn {
+            display: block;
+            width: 100%;
+            text-align: left;
+            padding: 11px 14px;
+            margin: 7px 0;
+            border: 2px solid #e2e8f0;
+            background-color: #f8fafc;
+            border-radius: 8px;
+            font-size: 0.94rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: 'Inter', sans-serif;
+            color: var(--ink);
+        }
+        .quiz-btn:hover:not(:disabled) { border-color: var(--purple); background-color: #faf5ff; }
+        .quiz-btn.correct { background-color: #dcfce7; border-color: #16a34a; color: #14532d; font-weight: 700; }
+        .quiz-btn.incorrect { background-color: #fee2e2; border-color: #dc2626; color: #7f1d1d; }
+        .quiz-feedback {
+            margin-top: 8px;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 0.88rem;
+            font-weight: 600;
+            display: none;
+        }
+
+        /* --- EXERCÍCIOS INTERATIVOS --- */
+        .exercise-input {
+            border: none;
+            border-bottom: 2px solid var(--blue);
+            background: #ffffff;
+            padding: 3px 8px;
+            margin: 0 4px;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: #1d4ed8;
+            min-width: 100px;
+            border-radius: 4px 4px 0 0;
+        }
+        .exercise-input.short {
+            min-width: 56px;
+            width: 56px;
+            text-align: center;
+            text-transform: uppercase;
+        }
+        .exercise-input:focus { outline: none; background: #eff6ff; border-color: var(--teal); }
 
         details.gabarito {
-            margin-top: 20px;
-            background: #f8f9fa;
-            border: 1px solid #ddd;
+            margin-top: 16px;
+            background: #f8fafc;
+            border: 1px solid #cbd5e1;
             border-radius: 8px;
-            padding: 10px;
+            overflow: hidden;
         }
-        
         details.gabarito summary {
-            font-weight: bold;
+            font-weight: 700;
             cursor: pointer;
-            color: #2c3e50;
-            padding: 10px;
-            list-style: none; /* Remove seta padrão em alguns browsers */
+            color: var(--navy);
+            padding: 13px 16px;
+            list-style: none;
+            background: #f1f5f9;
         }
-        
-        details.gabarito summary::after {
-            content: " 👇";
-        }
-        
-        details.gabarito[open] summary::after {
-            content: " 👆";
-        }
-
+        details.gabarito summary::after { content: " 👇"; float: right; }
+        details.gabarito[open] summary::after { content: " 👆"; }
         .gabarito-content {
-            padding: 15px;
-            border-top: 1px solid #ddd;
-            color: #555;
+            padding: 14px 16px;
+            border-top: 1px solid #cbd5e1;
+            background: #fff;
+            font-size: 0.92rem;
+        }
+        .gabarito-content p { margin-bottom: 8px; }
+
+        /* --- RESPONSIVIDADE MOBILE --- */
+        @media (max-width: 720px) {
+            body { padding: 10px 6px 100px 6px; }
+            .container { padding: 16px 14px; border-radius: 10px; }
+            h1 { font-size: 1.4rem; }
+            h2 { font-size: 1.25rem; }
+            h3 { font-size: 1.1rem; }
+            table { min-width: 100%; }
+            .sentence-table thead { display: none; }
+            .sentence-table tr {
+                display: block;
+                border-bottom: 2px solid #e2e8f0;
+                padding: 10px 0;
+            }
+            .sentence-table td {
+                display: block;
+                width: 100%;
+                border: none;
+                padding: 5px 10px;
+            }
+            .pen-fab { bottom: 14px; right: 14px; padding: 11px 16px; font-size: 0.88rem; }
         }
 
+        /* --- IMPRESSÃO A4 EM PDF (COM OBSERVAÇÕES E DESENHOS DA CANETA!) --- */
+        @page { size: A4 portrait; margin: 10mm; }
+        @media print {
+            body { background-color: #fff; padding: 0; font-size: 9.5pt; }
+            .container { box-shadow: none; max-width: 100%; padding: 0; border-radius: 0; }
+            .top-actions, .notes-toolbar, .pen-fab, .pen-dock, .audio-btn-inline, .audio-btn-round, .audio-btn-pill, .search-box, .obs-save-badge, .toast-banner {
+                display: none !important;
+            }
+            .obs-textarea { display: none !important; }
+            .obs-box.empty-note { display: none !important; }
+            .obs-box.has-note { display: block !important; background: #fffbeb !important; border: 1px solid #f59e0b !important; padding: 8px 10px; margin: 8px 0 14px 0; }
+            .obs-box.has-note .obs-print-mirror { display: block !important; }
+            .vocab-item, tr, .theme-intro, .nota-dica, .nota-gramatical, .extra-task, .secao-exercicios, .quiz-container {
+                page-break-inside: avoid;
+            }
+            .vocab-grid { grid-template-columns: repeat(3, 1fr); gap: 8px; }
+            .vocab-item { padding: 7px 9px; }
+            * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+        }
     </style>
 </head>
 <body>
+    <!-- BOTÃO FLUTUANTE DA CANETA (ACESSO RÁPIDO EM QUALQUER ALTURA DA AULA) -->
+    <button id="penFab" class="pen-fab" onclick="openPenDock('pen')" title="Ativar Caneta e Marca-texto sobre o livro">
+        ✏️ Caneta / Grifar
+    </button>
 
-    <div class="container">
-        <!-- Botão Navegação Topo -->
-        <button class="nav-btn" onclick="alert('Voltar ao Menu Principal')">⬅ Voltar ao Menu</button>
-
-        <h1>Aula 26: "E Se...?" – Condicionais Zero e Tipo 1 (Reais e Prováveis) <span class="emoji-large">🤔🔮</span><br><span style="font-size: 0.8em; font-weight: normal;">(What If...? – Zero and First Conditionals)</span></h1>
-
-        <div class="theme-intro">
-            <p>Bem-vindo(a) à Aula 26! <span class="emoji-small">✨</span></p>
-            <p>Hoje vamos aprender a falar sobre <strong>causa e efeito</strong> e <strong>possibilidades reais</strong> no futuro. As "Conditionals" (Condicionais) são frases que descrevem o que acontece (ou acontecerá) <em>se</em> uma determinada condição for atendida. Nosso tema será <strong>Fatos científicos, leis da natureza e planos futuros baseados em condições</strong>. Prepare-se para planejar e prever! <span class="emoji-small">🌡️☔📅</span></p>
+    <!-- PAINEL FLUTUANTE DA CANETA / MARCA-TEXTO / BORRACHA -->
+    <div id="penDock" class="pen-dock" role="toolbar" aria-label="Ferramentas de desenho sobre a aula">
+        <div id="penModeBanner" class="pen-mode-banner">
+            ✏️ Modo Caneta ATIVO — Circule palavras ou faça anotações à mão sobre a aula (salvo automaticamente!)
         </div>
+        <div class="pen-dock-row">
+            <button id="toolPenBtn" class="dock-btn active" onclick="setDrawTool('pen')">✏️ Caneta</button>
+            <button id="toolHighlightBtn" class="dock-btn" onclick="setDrawTool('highlighter')">🖍️ Marca-texto</button>
+            <button id="toolEraserBtn" class="dock-btn" onclick="setDrawTool('eraser')">🧹 Borracha</button>
 
-        <h2>26. Causa, Efeito e Possibilidades Reais</h2>
+            <span class="dock-divider"></span>
 
-        <section id="zero-conditional">
-            <h3>26.1 Zero Conditional: Fatos e Verdades Universais <span class="emoji-small">🌍</span></h3>
-            <p>O <strong>Zero Conditional</strong> é usado para falar sobre fatos que são sempre verdadeiros, verdades científicas, hábitos ou regras gerais. Se a condição acontecer, o resultado é 100% certo.</p>
-            <p><strong>Estrutura:</strong> If + Present Simple, ... Present Simple.</p>
-            
-            <div class="table-responsive-wrapper">
-                <table>
-                    <thead>
-                        <tr>
-                            <th style="width: 45%;">Frase em Inglês</th>
-                            <th>Detalhes (IPA / Tradução)</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <!-- Frase 1 -->
-                        <tr>
-                            <td>If you <span class="example-word">heat</span> water to 100 degrees Celsius, it <span class="example-word">boils</span>. <button class="audio-btn-inline" onclick="playAudio('If you heat water to 100 degrees Celsius, it boils.')">🔊</button></td>
-                            <td class="details-cell"><span class="ipa-symbol">/ɪf juː hiːt ˈwɔːtər tuː wʌn ˈhʌndrəd dɪˈɡriːz ˈselsiəs ɪt bɔɪlz/</span><br><span class="character-portuguese-phonetics">(ÊF iúu RÍIT UÓ-tãr tu UÂN RÂN-drêd dĩ-GRÍIZ SÉL-si-ãs êt BÓILZ)</span><span class="details-translation">Se você aquece água a 100 graus Celsius, ela ferve.</span></td>
-                        </tr>
-                        <!-- Frase 2 -->
-                        <tr>
-                            <td>Plants <span class="example-word">die</span> if they <span class="example-word">don't get</span> enough water. <button class="audio-btn-inline" onclick="playAudio('Plants die if they don\'t get enough water.')">🔊</button></td>
-                            <td class="details-cell"><span class="ipa-symbol">/plænts daɪ ɪf ðeɪ doʊnt ɡet ɪˈnʌf ˈwɔːtər/</span><br><span class="character-portuguese-phonetics">(PLÉNTS DÁI êf dhêi DÔUNT GUÉT i-NÂF UÓ-tãr)</span><span class="details-translation">As plantas morrem se não recebem água suficiente.</span></td>
-                        </tr>
-                        <!-- Frase 3 -->
-                        <tr>
-                            <td>If you <span class="example-word">mix</span> red and yellow, you <span class="example-word">get</span> orange. <button class="audio-btn-inline" onclick="playAudio('If you mix red and yellow, you get orange.')">🔊</button></td>
-                            <td class="details-cell"><span class="ipa-symbol">/ɪf juː mɪks red ænd ˈjeloʊ juː ɡet ˈɔːrɪndʒ/</span><br><span class="character-portuguese-phonetics">(ÊF iúu MÊKS RÉD énd IÉ-lôu iúu GUÉT Ó-rĩndj)</span><span class="details-translation">Se você mistura vermelho e amarelo, você obtém laranja.</span></td>
-                        </tr>
-                        <!-- Frase 4 -->
-                        <tr>
-                            <td>When I <span class="example-word">drink</span> too much coffee, I <span class="example-word">can't sleep</span> well. <button class="audio-btn-inline" onclick="playAudio('When I drink too much coffee, I can\'t sleep well.')">🔊</button></td>
-                            <td class="details-cell"><span class="ipa-symbol">/wen aɪ drɪŋk tuː mʌtʃ ˈkɔːfi aɪ kænt sliːp wel/</span><br><span class="character-portuguese-phonetics">(UÉN ái DRÊNK TÚU MÂTCH CÓ-fi ái KÉNT SLÍIP UÉL)</span><span class="details-translation">Quando eu bebo muito café, não consigo dormir bem.</span></td>
-                        </tr>
-                        <!-- Frase 5 -->
-                        <tr>
-                            <td>If you <span class="example-word">don't eat</span>, you <span class="example-word">get</span> hungry. <button class="audio-btn-inline" onclick="playAudio('If you don\'t eat, you get hungry.')">🔊</button></td>
-                            <td class="details-cell"><span class="ipa-symbol">/ɪf juː doʊnt iːt juː ɡet ˈhʌŋɡri/</span><br><span class="character-portuguese-phonetics">(ÊF iúu DÔUNT ÍIT iúu GUÉT RÂN-gri)</span><span class="details-translation">Se você não come, você fica com fome.</span></td>
-                        </tr>
-                        <!-- Frase 6 -->
-                        <tr>
-                            <td>Metals <span class="example-word">expand</span> if you <span class="example-word">heat</span> them. <button class="audio-btn-inline" onclick="playAudio('Metals expand if you heat them.')">🔊</button></td>
-                            <td class="details-cell"><span class="ipa-symbol">/ˈmetlz ɪkˈspænd ɪf juː hiːt ðəm/</span><br><span class="character-portuguese-phonetics">(MÉ-tõlz ek-SPÉND êf iúu RÍIT dhãm)</span><span class="details-translation">Metais expandem se você os aquece.</span></td>
-                        </tr>
-                        <!-- Frase 7 -->
-                        <tr>
-                            <td>If it <span class="example-word">rains</span>, the ground <span class="example-word">gets</span> wet. <button class="audio-btn-inline" onclick="playAudio('If it rains, the ground gets wet.')">🔊</button></td>
-                            <td class="details-cell"><span class="ipa-symbol">/ɪf ɪt reɪnz ðə ɡraʊnd ɡets wet/</span><br><span class="character-portuguese-phonetics">(ÊF êt RÊINZ, dhã GRÁUND GUÉTS UÉT)</span><span class="details-translation">Se chove, o chão fica molhado.</span></td>
-                        </tr>
-                        <!-- Frase 8 -->
-                        <tr>
-                            <td>When the sun <span class="example-word">goes down</span>, it <span class="example-word">gets</span> dark. <button class="audio-btn-inline" onclick="playAudio('When the sun goes down, it gets dark.')">🔊</button></td>
-                            <td class="details-cell"><span class="ipa-symbol">/wen ðə sʌn ɡoʊz daʊn ɪt ɡets dɑːrk/</span><br><span class="character-portuguese-phonetics">(UÉN dhã SÂN GÔUZ DÁUN êt GUÉTS DÁRK)</span><span class="details-translation">Quando o sol se põe, fica escuro.</span></td>
-                        </tr>
-                        <!-- Frase 9 -->
-                        <tr>
-                            <td>If you <span class="example-word">touch</span> fire, you <span class="example-word">get</span> burned. <button class="audio-btn-inline" onclick="playAudio('If you touch fire, you get burned.')">🔊</button></td>
-                            <td class="details-cell"><span class="ipa-symbol">/ɪf juː tʌtʃ ˈfaɪər juː ɡet bɜːrnd/</span><br><span class="character-portuguese-phonetics">(ÊF iúu TÂTCH FÁI-ãr iúu GUÉT BÃRND)</span><span class="details-translation">Se você toca no fogo, você se queima.</span></td>
-                        </tr>
-                        <!-- Frase 10 -->
-                        <tr>
-                            <td>People <span class="example-word">get</span> thirsty if they <span class="example-word">don't drink</span> enough water. <button class="audio-btn-inline" onclick="playAudio('People get thirsty if they don\'t drink enough water.')">🔊</button></td>
-                            <td class="details-cell"><span class="ipa-symbol">/ˈpiːpl ɡet ˈθɜːrsti ɪf ðeɪ doʊnt drɪŋk ɪˈnʌf ˈwɔːtər/</span><br><span class="character-portuguese-phonetics">(PÍI-põl GUÉT THÃRS-ti êf dhêi DÔUNT DRÊNK i-NÂF UÓ-tãr)</span><span class="details-translation">As pessoas ficam com sede se não bebem água suficiente.</span></td>
-                        </tr>
-                        <!-- Frase 11 -->
-                        <tr>
-                            <td>If you <span class="example-word">press</span> that button, the machine <span class="example-word">turns on</span>. <button class="audio-btn-inline" onclick="playAudio('If you press that button, the machine turns on.')">🔊</button></td>
-                            <td class="details-cell"><span class="ipa-symbol">/ɪf juː pres ðæt ˈbʌtn ðə məˈʃiːn tɜːrnz ɑːn/</span><br><span class="character-portuguese-phonetics">(ÊF iúu PRÉS DHÉT BÂ-tãn, dhã mã-XÍIN TÃRNZ ÓN)</span><span class="details-translation">Se você aperta aquele botão, a máquina liga.</span></td>
-                        </tr>
-                        <!-- Frase 12 -->
-                        <tr>
-                            <td>Computers <span class="example-word">get</span> slow if you <span class="example-word">open</span> too many apps. <button class="audio-btn-inline" onclick="playAudio('Computers get slow if you open too many apps.')">🔊</button></td>
-                            <td class="details-cell"><span class="ipa-symbol">/kəmˈpjuːtərz ɡet sloʊ ɪf juː ˈoʊpən tuː ˈmeni æps/</span><br><span class="character-portuguese-phonetics">(cãm-PIÚU-tãrz GUÉT SLÔU êf iúu ÔU-pãn TÚU MÉ-ni ÉPS)</span><span class="details-translation">Computadores ficam lentos se você abre muitos aplicativos.</span></td>
-                        </tr>
-                        <!-- Frase 13 -->
-                        <tr>
-                            <td>If you <span class="example-word">don't sleep</span> enough, you <span class="example-word">feel</span> tired the next day. <button class="audio-btn-inline" onclick="playAudio('If you don\'t sleep enough, you feel tired the next day.')">🔊</button></td>
-                            <td class="details-cell"><span class="ipa-symbol">/ɪf juː doʊnt sliːp ɪˈnʌf juː fiːl ˈtaɪərd ðə nekst deɪ/</span><br><span class="character-portuguese-phonetics">(ÊF iúu DÔUNT SLÍIP i-NÂF, iúu FÍIL TÁI-ãrd dhã NÉKST DÊI)</span><span class="details-translation">Se você não dorme o suficiente, você se sente cansado no dia seguinte.</span></td>
-                        </tr>
-                        <!-- Frase 14 -->
-                        <tr>
-                            <td>When it <span class="example-word">is</span> a holiday, the shops <span class="example-word">are</span> usually closed. <button class="audio-btn-inline" onclick="playAudio('When it is a holiday, the shops are usually closed.')">🔊</button></td>
-                            <td class="details-cell"><span class="ipa-symbol">/wen ɪt ɪz ə ˈhɑːlədeɪ ðə ʃɑːps ɑːr ˈjuːʒuəli kloʊzd/</span><br><span class="character-portuguese-phonetics">(UÉN êt êz ã RÓ-lĩ-dei, dhã XÓPS ár IÚU-jua-li CLÔUZD)</span><span class="details-translation">Quando é feriado, as lojas geralmente estão fechadas.</span></td>
-                        </tr>
-                        <!-- Frase 15 -->
-                        <tr>
-                            <td>If you <span class="example-word">add</span> sugar to tea, it <span class="example-word">tastes</span> sweet. <button class="audio-btn-inline" onclick="playAudio('If you add sugar to tea, it tastes sweet.')">🔊</button></td>
-                            <td class="details-cell"><span class="ipa-symbol">/ɪf juː æd ˈʃʊɡər tə tiː ɪt teɪsts swiːt/</span><br><span class="character-portuguese-phonetics">(ÊF iúu ÉD XÚ-gãr tã TÍI, êt TÊISTS SUÍIT)</span><span class="details-translation">Se você adiciona açúcar ao chá, ele fica com gosto doce.</span></td>
-                        </tr>
-                    </tbody>
-                </table>
+            <!-- PALETA DE CORES -->
+            <button class="color-swatch selected" data-color="#e11d48" style="background:#e11d48;" onclick="setDrawColor('#e11d48', this)" title="Vermelho"></button>
+            <button class="color-swatch" data-color="#2563eb" style="background:#2563eb;" onclick="setDrawColor('#2563eb', this)" title="Azul"></button>
+            <button class="color-swatch" data-color="#16a34a" style="background:#16a34a;" onclick="setDrawColor('#16a34a', this)" title="Verde"></button>
+            <button class="color-swatch" data-color="#facc15" style="background:#facc15;" onclick="setDrawColor('#facc15', this)" title="Amarelo (ótimo p/ marca-texto)"></button>
+            <button class="color-swatch" data-color="#9333ea" style="background:#9333ea;" onclick="setDrawColor('#9333ea', this)" title="Roxo"></button>
+            <button class="color-swatch" data-color="#1e293b" style="background:#1e293b;" onclick="setDrawColor('#1e293b', this)" title="Preto"></button>
+
+            <span class="dock-divider"></span>
+
+            <!-- ESPESSURA -->
+            <button class="size-pill" data-size="2.5" onclick="setPenSize(2.5, this)">Fina</button>
+            <button class="size-pill selected" data-size="4" onclick="setPenSize(4, this)">Média</button>
+            <button class="size-pill" data-size="7" onclick="setPenSize(7, this)">Grossa</button>
+        </div>
+        <div class="pen-dock-row">
+            <button class="dock-btn" onclick="undoLastStroke()">↩️ Desfazer</button>
+            <button id="toggleVisBtn" class="dock-btn" onclick="toggleDrawingsVisibility()">👁️ Ocultar traços</button>
+            <button class="dock-btn" onclick="showClearDrawConfirm()">🗑️ Limpar rabiscos</button>
+            <button class="dock-btn exit-btn" onclick="closePenDock()">✋ Voltar à Leitura</button>
+        </div>
+        <div id="clearDrawConfirm" class="inline-confirm" style="margin-top:2px;">
+            <span><strong>Apagar todos os desenhos?</strong> Suas observações escritas serão mantidas.</span>
+            <div style="display:flex; gap:8px;">
+                <button class="confirm-yes" onclick="confirmClearDrawings()">Sim, apagar desenhos</button>
+                <button class="confirm-no" onclick="hideClearDrawConfirm()">Cancelar</button>
             </div>
-            <p class="nota-dica"><strong>Dica:</strong> No Zero Conditional, você pode substituir "if" por "when" sem mudar muito o sentido. <br><em>When you heat ice, it melts.</em></p>
-        </section>
-
-        <section id="first-conditional">
-            <h3>26.2 First Conditional: Possibilidades Reais no Futuro <span class="emoji-small">🔮</span></h3>
-            <p>O <strong>First Conditional</strong> é usado para falar sobre situações reais ou muito prováveis no futuro. Existe uma condição real e um resultado provável.</p>
-            <p><strong>Estrutura:</strong> If + Present Simple, ... WILL + Verbo (Futuro Simples).</p>
-            
-            <div class="table-responsive-wrapper">
-                <table>
-                    <thead>
-                        <tr>
-                            <th style="width: 45%;">Frase em Inglês</th>
-                            <th>Detalhes (IPA / Tradução)</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <!-- Frase 1 -->
-                        <tr>
-                            <td>If it <span class="example-word">rains</span> tomorrow, I <span class="example-word">will stay</span> home. <button class="audio-btn-inline" onclick="playAudio('If it rains tomorrow, I will stay home.')">🔊</button></td>
-                            <td class="details-cell"><span class="ipa-symbol">/ɪf ɪt reɪnz təˈmɑːroʊ aɪ wɪl steɪ hoʊm/</span><br><span class="character-portuguese-phonetics">(ÊF êt RÊINZ tã-MÓ-rôu, ái uêl STÊI RÔUM)</span><span class="details-translation">Se chover amanhã, eu ficarei em casa.</span></td>
-                        </tr>
-                        <!-- Frase 2 -->
-                        <tr>
-                            <td>If you <span class="example-word">study</span> hard, you <span class="example-word">will pass</span> the exam. <button class="audio-btn-inline" onclick="playAudio('If you study hard, you will pass the exam.')">🔊</button></td>
-                            <td class="details-cell"><span class="ipa-symbol">/ɪf juː ˈstʌdi hɑːrd juː wɪl pæs ði ɪɡˈzæm/</span><br><span class="character-portuguese-phonetics">(ÊF iúu STÂ-di RÁRD, iúu uêl PÉS dhí eg-ZÉM)</span><span class="details-translation">Se você estudar muito, você passará na prova.</span></td>
-                        </tr>
-                        <!-- Frase 3 -->
-                        <tr>
-                            <td>She <span class="example-word">will miss</span> the bus if she <span class="example-word">doesn't hurry</span>. <button class="audio-btn-inline" onclick="playAudio('She will miss the bus if she doesn\'t hurry.')">🔊</button></td>
-                            <td class="details-cell"><span class="ipa-symbol">/ʃiː wɪl mɪs ðə bʌs ɪf ʃiː ˈdʌznt ˈhɜːri/</span><br><span class="character-portuguese-phonetics">(XÍI uêl MÊS dhã BÂS ÊF xíi DÂ-zãnt RÃ-ri)</span><span class="details-translation">Ela perderá o ônibus se ela não se apressar.</span></td>
-                        </tr>
-                        <!-- Frase 4 -->
-                        <tr>
-                            <td>If I <span class="example-word">see</span> him, I <span class="example-word">will tell</span> him the news. <button class="audio-btn-inline" onclick="playAudio('If I see him, I will tell him the news.')">🔊</button></td>
-                            <td class="details-cell"><span class="ipa-symbol">/ɪf aɪ siː ɪm aɪ wɪl tel ɪm ðə nuːz/</span><br><span class="character-portuguese-phonetics">(ÊF ái SÍI îm, ái uêl TÉL îm dhã NÚUZ)</span><span class="details-translation">Se eu o vir, contarei a ele as novidades.</span></td>
-                        </tr>
-                        <!-- Frase 5 -->
-                        <tr>
-                            <td>We <span class="example-word">will go</span> to the beach if the weather <span class="example-word">is</span> good. <button class="audio-btn-inline" onclick="playAudio('We will go to the beach if the weather is good.')">🔊</button></td>
-                            <td class="details-cell"><span class="ipa-symbol">/wiː wɪl ɡoʊ tu ðə biːtʃ ɪf ðə ˈweðər ɪz ɡʊd/</span><br><span class="character-portuguese-phonetics">(UÍI uêl GÔU tu dhã BÍITCH ÊF dhã UÉ-dhãr ÊZ GÚD)</span><span class="details-translation">Nós iremos à praia se o tempo estiver bom.</span></td>
-                        </tr>
-                        <!-- Frase 6 -->
-                        <tr>
-                            <td>If they <span class="example-word">don't leave</span> now, they <span class="example-word">will be</span> late. <button class="audio-btn-inline" onclick="playAudio('If they don\'t leave now, they will be late.')">🔊</button></td>
-                            <td class="details-cell"><span class="ipa-symbol">/ɪf ðeɪ doʊnt liːv naʊ ðeɪ wɪl biː leɪt/</span><br><span class="character-portuguese-phonetics">(ÊF dhêi DÔUNT LÍIV NÁU, dhêi uêl BÍI LÊIT)</span><span class="details-translation">Se eles não saírem agora, eles se atrasarão.</span></td>
-                        </tr>
-                        <!-- Frase 7 -->
-                        <tr>
-                            <td>I <span class="example-word">will cook</span> dinner if you <span class="example-word">wash</span> the dishes. <button class="audio-btn-inline" onclick="playAudio('I will cook dinner if you wash the dishes.')">🔊</button></td>
-                            <td class="details-cell"><span class="ipa-symbol">/aɪ wɪl kʊk ˈdɪnər ɪf juː wɑːʃ ðə ˈdɪʃɪz/</span><br><span class="character-portuguese-phonetics">(ÁI uêl CÚK DÊ-nãr ÊF iúu UÓSH dhã DÊ-shêz)</span><span class="details-translation">Eu farei o jantar se você lavar a louça.</span></td>
-                        </tr>
-                        <!-- Frase 8 -->
-                        <tr>
-                            <td>If he <span class="example-word">calls</span>, <span class="example-word">will</span> you <span class="example-word">answer</span>? <button class="audio-btn-inline" onclick="playAudio('If he calls, will you answer?')">🔊</button></td>
-                            <td class="details-cell"><span class="ipa-symbol">/ɪf hiː kɔːlz wɪl juː ˈænsər/</span><br><span class="character-portuguese-phonetics">(ÊF ríi CÓLZ, uêl iúu ÉN-sãr?)</span><span class="details-translation">Se ele ligar, você atenderá?</span></td>
-                        </tr>
-                        <!-- Frase 9 -->
-                        <tr>
-                            <td>If you <span class="example-word">drop</span> that glass, it <span class="example-word">will break</span>. <button class="audio-btn-inline" onclick="playAudio('If you drop that glass, it will break.')">🔊</button></td>
-                            <td class="details-cell"><span class="ipa-symbol">/ɪf juː drɑːp ðæt ɡlæs ɪt wɪl breɪk/</span><br><span class="character-portuguese-phonetics">(ÊF iúu DRÓP DHÉT GLÉS, êt uêl BRÊIK)</span><span class="details-translation">Se você derrubar aquele copo, ele quebrará.</span></td>
-                        </tr>
-                        <!-- Frase 10 -->
-                        <tr>
-                            <td>If you <span class="example-word">eat</span> too much candy, you <span class="example-word">will feel</span> sick. <button class="audio-btn-inline" onclick="playAudio('If you eat too much candy, you will feel sick.')">🔊</button></td>
-                            <td class="details-cell"><span class="ipa-symbol">/ɪf juː iːt tuː mʌtʃ ˈkændi juː wɪl fiːl sɪk/</span><br><span class="character-portuguese-phonetics">(ÊF iúu ÍIT TÚU MÂTCH KÉN-di, iúu uêl FÍIL SÊK)</span><span class="details-translation">Se você comer muito doce, você se sentirá mal.</span></td>
-                        </tr>
-                        <!-- Frase 11 -->
-                        <tr>
-                            <td>If I <span class="example-word">finish</span> my work early, I <span class="example-word">will join</span> you. <button class="audio-btn-inline" onclick="playAudio('If I finish my work early, I will join you.')">🔊</button></td>
-                            <td class="details-cell"><span class="ipa-symbol">/ɪf aɪ ˈfɪnɪʃ maɪ wɜːrk ˈɜːrli aɪ wɪl dʒɔɪn juː/</span><br><span class="character-portuguese-phonetics">(ÊF ái FÊ-nêsh mái UÃRK ÃR-li, ái uêl DJÓIN iúu)</span><span class="details-translation">Se eu terminar meu trabalho cedo, eu me juntarei a vocês.</span></td>
-                        </tr>
-                        <!-- Frase 12 -->
-                        <tr>
-                            <td>If they <span class="example-word">invite</span> us, we <span class="example-word">can go</span> to the event. <button class="audio-btn-inline" onclick="playAudio('If they invite us, we can go to the event.')">🔊</button></td>
-                            <td class="details-cell"><span class="ipa-symbol">/ɪf ðeɪ ɪnˈvaɪt ʌs wiː kæn ɡoʊ tu ði ɪˈvent/</span><br><span class="character-portuguese-phonetics">(ÊF dhêi în-VÁIT âs, uíi KÉN GÔU tu dhí i-VÉNT)</span><span class="details-translation">Se eles nos convidarem, nós podemos ir ao evento.</span></td>
-                        </tr>
-                        <!-- Frase 13 -->
-                        <tr>
-                            <td>If the weather <span class="example-word">is</span> bad, the trip <span class="example-word">might be</span> canceled. <button class="audio-btn-inline" onclick="playAudio('If the weather is bad, the trip might be canceled.')">🔊</button></td>
-                            <td class="details-cell"><span class="ipa-symbol">/ɪf ðə ˈweðər ɪz bæd ðə trɪp maɪt biː ˈkænsəld/</span><br><span class="character-portuguese-phonetics">(ÊF dhã UÉ-dhãr êz BÉD, dhã TRÊP MÁIT bíi KÉN-sõld)</span><span class="details-translation">Se o tempo estiver ruim, a viagem pode ser cancelada.</span></td>
-                        </tr>
-                        <!-- Frase 14 -->
-                        <tr>
-                            <td>You <span class="example-word">should see</span> a doctor if you <span class="example-word">feel</span> sick. <button class="audio-btn-inline" onclick="playAudio('You should see a doctor if you feel sick.')">🔊</button></td>
-                            <td class="details-cell"><span class="ipa-symbol">/juː ʃəd siː ə ˈdɑːktər ɪf juː fiːl sɪk/</span><br><span class="character-portuguese-phonetics">(IÚU xãd SÍI ã DÓK-tãr êf iúu FÍIL SÊK)</span><span class="details-translation">Você deveria ver um médico se você se sentir doente.</span></td>
-                        </tr>
-                        <!-- Frase 15 -->
-                        <tr>
-                            <td>If she <span class="example-word">passes</span> the interview, she <span class="example-word">will get</span> the job. <button class="audio-btn-inline" onclick="playAudio('If she passes the interview, she will get the job.')">🔊</button></td>
-                            <td class="details-cell"><span class="ipa-symbol">/ɪf ʃiː ˈpæsɪz ði ˈɪntərvjuː ʃiː wɪl ɡet ðə dʒɑːb/</span><br><span class="character-portuguese-phonetics">(ÊF xíi PÉ-sêz dhí ÊN-tãr-viu, xíi uêl GUÉT dhã DJÓB)</span><span class="details-translation">Se ela passar na entrevista, ela conseguirá o emprego.</span></td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </section>
-
-        <section id="comparacao-zero-first">
-            <h3>26.3 Zero vs. First Conditional: Qual a diferença? <span class="emoji-small">🆚</span></h3>
-            <p>A principal diferença está na <strong>probabilidade e especificidade</strong>.</p>
-            <div class="table-responsive-wrapper">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Tipo</th>
-                            <th>Foco</th>
-                            <th>Exemplo</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td><strong>Zero</strong></td>
-                            <td>Verdades gerais, leis da física. Acontece <strong>sempre</strong>.</td>
-                            <td>If I <strong>eat</strong> too much, I <strong>feel</strong> sick. <br><small>(Sempre que como demais, me sinto mal.)</small></td>
-                        </tr>
-                        <tr>
-                            <td><strong>First</strong></td>
-                            <td>Situação específica no futuro. Acontece <strong>nesta ocasião</strong>.</td>
-                            <td>If I <strong>eat</strong> this cake, I <strong>will feel</strong> sick. <br><small>(Se eu comer este bolo agora, vou me sentir mal - situação específica.)</small></td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </section>
-
-        <section id="topic-extra-unless">
-            <h3>26.4 Tópico Extra: Variações Importantes <span class="emoji-small">➕💡</span></h3>
-            
-            <h4>1. "Unless" (A menos que / Se não)</h4>
-            <p>Podemos usar <strong>"Unless"</strong> no lugar de <strong>"If... not"</strong>. Isso torna a frase mais elegante.</p>
-            <ul>
-                <li><strong>If</strong> you <strong>don't</strong> hurry, you will miss the bus. <br>
-                    <small>(Se você não se apressar...)</small>
-                </li>
-                <li><strong>Unless</strong> you hurry, you will miss the bus. <br>
-                    <small>(A menos que você se apresse...)</small>
-                    <button class="audio-btn-inline" onclick="playAudio('Unless you hurry, you will miss the bus.')">🔊</button>
-                </li>
-            </ul>
-
-            <h4>2. Imperativos no First Conditional</h4>
-            <p>No First Conditional, em vez de "will", podemos usar um <strong>Imperativo</strong> (ordem ou pedido) na oração principal.</p>
-            <ul>
-                <li>If you see him, <strong>tell</strong> him to call me. <button class="audio-btn-inline" onclick="playAudio('If you see him, tell him to call me.')">🔊</button><br>
-                    <small>(Se você o vir, diga a ele para me ligar.)</small>
-                </li>
-                <li>If you are tired, <strong>go</strong> to bed. <button class="audio-btn-inline" onclick="playAudio('If you are tired, go to bed.')">🔊</button><br>
-                    <small>(Se você estiver cansado, vá para a cama.)</small>
-                </li>
-            </ul>
-        </section>
-
-        <section id="vocabulario">
-            <h3>Vocabulário da Aula: Condições e Natureza 📚</h3>
-            <p>Palavras essenciais para construir suas condicionais.</p>
-            
-            <div class="vocab-grid">
-                <!-- Verbos -->
-                <div class="vocab-item"><div class="vocab-text"><span class="vocab-en">Boil</span><span class="vocab-ipa">/bɔɪl/</span><span class="vocab-pt">FERVER</span></div><button class="audio-btn-round" onclick="playAudio('Boil')">🔊</button></div>
-                <div class="vocab-item"><div class="vocab-text"><span class="vocab-en">Melt</span><span class="vocab-ipa">/melt/</span><span class="vocab-pt">DERRETER</span></div><button class="audio-btn-round" onclick="playAudio('Melt')">🔊</button></div>
-                <div class="vocab-item"><div class="vocab-text"><span class="vocab-en">Freeze</span><span class="vocab-ipa">/friːz/</span><span class="vocab-pt">CONGELAR</span></div><button class="audio-btn-round" onclick="playAudio('Freeze')">🔊</button></div>
-                <div class="vocab-item"><div class="vocab-text"><span class="vocab-en">Heat</span><span class="vocab-ipa">/hiːt/</span><span class="vocab-pt">AQUECER</span></div><button class="audio-btn-round" onclick="playAudio('Heat')">🔊</button></div>
-                <div class="vocab-item"><div class="vocab-text"><span class="vocab-en">Rain</span><span class="vocab-ipa">/reɪn/</span><span class="vocab-pt">CHOVER</span></div><button class="audio-btn-round" onclick="playAudio('Rain')">🔊</button></div>
-                <div class="vocab-item"><div class="vocab-text"><span class="vocab-en">Snow</span><span class="vocab-ipa">/snoʊ/</span><span class="vocab-pt">NEVAR</span></div><button class="audio-btn-round" onclick="playAudio('Snow')">🔊</button></div>
-                <div class="vocab-item"><div class="vocab-text"><span class="vocab-en">Hurry</span><span class="vocab-ipa">/ˈhɜːri/</span><span class="vocab-pt">APRESSAR-SE</span></div><button class="audio-btn-round" onclick="playAudio('Hurry')">🔊</button></div>
-                <div class="vocab-item"><div class="vocab-text"><span class="vocab-en">Miss</span><span class="vocab-ipa">/mɪs/</span><span class="vocab-pt">PERDER (TRANSPORTE)</span></div><button class="audio-btn-round" onclick="playAudio('Miss')">🔊</button></div>
-                <div class="vocab-item"><div class="vocab-text"><span class="vocab-en">Catch</span><span class="vocab-ipa">/kætʃ/</span><span class="vocab-pt">PEGAR (TRANSPORTE)</span></div><button class="audio-btn-round" onclick="playAudio('Catch')">🔊</button></div>
-                <div class="vocab-item"><div class="vocab-text"><span class="vocab-en">Pass</span><span class="vocab-ipa">/pæs/</span><span class="vocab-pt">PASSAR (PROVA)</span></div><button class="audio-btn-round" onclick="playAudio('Pass')">🔊</button></div>
-                <div class="vocab-item"><div class="vocab-text"><span class="vocab-en">Fail</span><span class="vocab-ipa">/feɪl/</span><span class="vocab-pt">REPROVAR / FALHAR</span></div><button class="audio-btn-round" onclick="playAudio('Fail')">🔊</button></div>
-                <div class="vocab-item"><div class="vocab-text"><span class="vocab-en">Wait</span><span class="vocab-ipa">/weɪt/</span><span class="vocab-pt">ESPERAR</span></div><button class="audio-btn-round" onclick="playAudio('Wait')">🔊</button></div>
-                <div class="vocab-item"><div class="vocab-text"><span class="vocab-en">Stay</span><span class="vocab-ipa">/steɪ/</span><span class="vocab-pt">FICAR</span></div><button class="audio-btn-round" onclick="playAudio('Stay')">🔊</button></div>
-                <div class="vocab-item"><div class="vocab-text"><span class="vocab-en">Leave</span><span class="vocab-ipa">/liːv/</span><span class="vocab-pt">SAIR / PARTIR</span></div><button class="audio-btn-round" onclick="playAudio('Leave')">🔊</button></div>
-                <div class="vocab-item"><div class="vocab-text"><span class="vocab-en">Press</span><span class="vocab-ipa">/pres/</span><span class="vocab-pt">PRESSIONAR</span></div><button class="audio-btn-round" onclick="playAudio('Press')">🔊</button></div>
-                <div class="vocab-item"><div class="vocab-text"><span class="vocab-en">Touch</span><span class="vocab-ipa">/tʌtʃ/</span><span class="vocab-pt">TOCAR</span></div><button class="audio-btn-round" onclick="playAudio('Touch')">🔊</button></div>
-                <div class="vocab-item"><div class="vocab-text"><span class="vocab-en">Mix</span><span class="vocab-ipa">/mɪks/</span><span class="vocab-pt">MISTURAR</span></div><button class="audio-btn-round" onclick="playAudio('Mix')">🔊</button></div>
-                <div class="vocab-item"><div class="vocab-text"><span class="vocab-en">Get</span><span class="vocab-ipa">/ɡet/</span><span class="vocab-pt">FICAR / OBTER</span></div><button class="audio-btn-round" onclick="playAudio('Get')">🔊</button></div>
-                
-                <!-- Substantivos e Outros -->
-                <div class="vocab-item"><div class="vocab-text"><span class="vocab-en">Ice</span><span class="vocab-ipa">/aɪs/</span><span class="vocab-pt">GELO</span></div><button class="audio-btn-round" onclick="playAudio('Ice')">🔊</button></div>
-                <div class="vocab-item"><div class="vocab-text"><span class="vocab-en">Steam</span><span class="vocab-ipa">/stiːm/</span><span class="vocab-pt">VAPOR</span></div><button class="audio-btn-round" onclick="playAudio('Steam')">🔊</button></div>
-                <div class="vocab-item"><div class="vocab-text"><span class="vocab-en">Degrees</span><span class="vocab-ipa">/dɪˈɡriːz/</span><span class="vocab-pt">GRAUS</span></div><button class="audio-btn-round" onclick="playAudio('Degrees')">🔊</button></div>
-                <div class="vocab-item"><div class="vocab-text"><span class="vocab-en">Temperature</span><span class="vocab-ipa">/ˈtemprətʃər/</span><span class="vocab-pt">TEMPERATURA</span></div><button class="audio-btn-round" onclick="playAudio('Temperature')">🔊</button></div>
-                <div class="vocab-item"><div class="vocab-text"><span class="vocab-en">Umbrella</span><span class="vocab-ipa">/ʌmˈbrelə/</span><span class="vocab-pt">GUARDA-CHUVA</span></div><button class="audio-btn-round" onclick="playAudio('Umbrella')">🔊</button></div>
-                <div class="vocab-item"><div class="vocab-text"><span class="vocab-en">Coat</span><span class="vocab-ipa">/koʊt/</span><span class="vocab-pt">CASACO</span></div><button class="audio-btn-round" onclick="playAudio('Coat')">🔊</button></div>
-                <div class="vocab-item"><div class="vocab-text"><span class="vocab-en">Traffic</span><span class="vocab-ipa">/ˈtræfɪk/</span><span class="vocab-pt">TRÂNSITO</span></div><button class="audio-btn-round" onclick="playAudio('Traffic')">🔊</button></div>
-                <div class="vocab-item"><div class="vocab-text"><span class="vocab-en">Exam</span><span class="vocab-ipa">/ɪɡˈzæm/</span><span class="vocab-pt">PROVA</span></div><button class="audio-btn-round" onclick="playAudio('Exam')">🔊</button></div>
-                <div class="vocab-item"><div class="vocab-text"><span class="vocab-en">Fact</span><span class="vocab-ipa">/fækt/</span><span class="vocab-pt">FATO</span></div><button class="audio-btn-round" onclick="playAudio('Fact')">🔊</button></div>
-                <div class="vocab-item"><div class="vocab-text"><span class="vocab-en">Truth</span><span class="vocab-ipa">/truːθ/</span><span class="vocab-pt">VERDADE</span></div><button class="audio-btn-round" onclick="playAudio('Truth')">🔊</button></div>
-                <div class="vocab-item"><div class="vocab-text"><span class="vocab-en">Consequence</span><span class="vocab-ipa">/ˈkɑːnsɪkwens/</span><span class="vocab-pt">CONSEQUÊNCIA</span></div><button class="audio-btn-round" onclick="playAudio('Consequence')">🔊</button></div>
-                <div class="vocab-item"><div class="vocab-text"><span class="vocab-en">Weather</span><span class="vocab-ipa">/ˈweðər/</span><span class="vocab-pt">CLIMA / TEMPO</span></div><button class="audio-btn-round" onclick="playAudio('Weather')">🔊</button></div>
-                <div class="vocab-item"><div class="vocab-text"><span class="vocab-en">If</span><span class="vocab-ipa">/ɪf/</span><span class="vocab-pt">SE</span></div><button class="audio-btn-round" onclick="playAudio('If')">🔊</button></div>
-                <div class="vocab-item"><div class="vocab-text"><span class="vocab-en">Unless</span><span class="vocab-ipa">/ənˈles/</span><span class="vocab-pt">A MENOS QUE</span></div><button class="audio-btn-round" onclick="playAudio('Unless')">🔊</button></div>
-                <div class="vocab-item"><div class="vocab-text"><span class="vocab-en">When</span><span class="vocab-ipa">/wen/</span><span class="vocab-pt">QUANDO</span></div><button class="audio-btn-round" onclick="playAudio('When')">🔊</button></div>
-                <div class="vocab-item"><div class="vocab-text"><span class="vocab-en">Tomorrow</span><span class="vocab-ipa">/təˈmɑːroʊ/</span><span class="vocab-pt">AMANHÃ</span></div><button class="audio-btn-round" onclick="playAudio('Tomorrow')">🔊</button></div>
-            </div>
-        </section>
-
-        <section id="tarefa-extra" class="extra-task">
-            <h3>Tarefa Extra ✍️</h3>
-            <h4>Translate the Text</h4>
-            <p>Read the text below about planning a weekend trip. Pay attention to the Zero and First Conditionals. Then, try to translate it into Portuguese.</p>
-            <p>
-                When my friends and I plan a weekend trip, we always check the weather first. This is a general rule for us because if the weather <span class="example-word">is</span> bad, we usually <span class="example-word">change</span> our plans. If it <span class="example-word">snows</span> in the mountains, the roads <span class="example-word">get</span> very dangerous. That's a scientific fact. Also, when you <span class="example-word">don't prepare</span> for a trip properly, things often <span class="example-word">go</span> wrong.
-                <br><br>
-                For this upcoming weekend, our plan depends completely on the forecast. If the forecast <span class="example-word">is</span> good, we <span class="example-word">will go</span> hiking. The trail is beautiful, but it gets muddy if it <span class="example-word">rains</span>. So, if we <span class="example-word">see</span> dark clouds on Saturday morning, we <span class="example-word">will choose</span> an indoor activity instead. We will probably go to the local museum.
-                <br><br>
-                My friend, Ana, is in charge of the food. If she <span class="example-word">cooks</span>, everyone <span class="example-word">is</span> always happy because her food is delicious. For this trip, if we <span class="example-word">go</span> hiking, she <span class="example-word">will prepare</span> sandwiches and snacks. If we <span class="example-word">stay</span> in the city, we <span class="example-word">will try</span> that new restaurant downtown.
-                <br><br>
-                I am responsible for transportation. If my car <span class="example-word">is</span> ready from the mechanic, I <span class="example-word">will drive</span>. If it <span class="example-word">isn't</span> ready, we <span class="example-word">will have to</span> take the train. The train is a good option, but if we <span class="example-word">take</span> it, we <span class="example-word">won't be</span> as flexible with our schedule.
-                <br><br>
-                Ultimately, if we <span class="example-word">plan</span> everything carefully, we <span class="example-word">will have</span> a great time, no matter the weather. When friends <span class="example-word">travel</span> together, the most important thing <span class="example-word">is</span> the company. If we <span class="example-word">are</span> together, it <span class="example-word">will be</span> a memorable weekend.
-            </p>
-            
-            <hr style="border: 0; border-top: 1px solid #dcdde1; margin: 20px 0;">
-            
-            <h4>Quiz</h4>
-            <p>According to the text, what will happen if the weather is good for the weekend?</p>
-            <ol class="quiz-options">
-                <li>They will stay home.</li>
-                <li>They will go to the local museum.</li>
-                <li>They will cancel the trip.</li>
-                <li>They will go hiking.</li>
-                <li>They will take the train to another city.</li>
-            </ol>
-            
-            <details class="gabarito">
-                <summary>Ver Resposta do Quiz</summary>
-                <div class="gabarito-content">
-                    Resposta Correta: <strong>4. They will go hiking.</strong>
-                </div>
-            </details>
-        </section>
-
-        <section id="exercicios-finais">
-            <h3>Exercícios Práticos Finais 📝</h3>
-            <div class="secao-exercicios">
-                <h4>Parte 1: Zero Conditional (Fatos) ou First Conditional (Futuro)?</h4>
-                <p>Identifique se a frase é Zero (Z) ou First (F).</p>
-                <ol class="exercise-list">
-                    <li>If you heat ice, it melts. (<span class="fill-in-blank"></span>)</li>
-                    <li>If she studies hard, she will get good grades. (<span class="fill-in-blank"></span>)</li>
-                    <li>When I am sad, I listen to music. (<span class="fill-in-blank"></span>)</li>
-                    <li>We will miss the train if we don't leave now. (<span class="fill-in-blank"></span>)</li>
-                </ol>
-
-                <h4>Parte 2: Complete as Frases</h4>
-                <p>Complete com a forma correta do verbo entre parênteses.</p>
-                <ol class="exercise-list">
-                    <li>If it <span class="fill-in-blank"></span> (rain) tomorrow, we <span class="fill-in-blank"></span> (stay) home.</li>
-                    <li>Water <span class="fill-in-blank"></span> (boil) if you <span class="fill-in-blank"></span> (heat) it to 100°C.</li>
-                    <li>If I <span class="fill-in-blank"></span> (see) her, I <span class="fill-in-blank"></span> (tell) her you called.</li>
-                </ol>
-            </div>
-            
-            <details class="gabarito">
-                <summary>Ver Gabarito dos Exercícios</summary>
-                <div class="gabarito-content">
-                    <p><strong>Respostas da Parte 1:</strong> 1. Z, 2. F, 3. Z, 4. F.</p>
-                    <p><strong>Respostas da Parte 2:</strong> 1. rains, will stay/'ll stay, 2. boils, heat, 3. see, will tell/'ll tell.</p>
-                </div>
-            </details>
-        </section>
-
-        <section id="conclusao">
-            <h3>Conclusão 🥳</h3>
-            <p>Parabéns por concluir a Aula 26! Você aprendeu sobre o Zero Conditional para falar de fatos e verdades, e o First Conditional para falar sobre situações futuras reais ou prováveis e seus resultados. Essas estruturas são fundamentais para expressar lógica e planejar.</p>
-            <p>Continue praticando a formação dessas frases para usá-las com confiança.</p>
-            <p>Na Aula 27: "Situações Imaginárias – Condicional Tipo 2 (O Futuro Irreal)", vamos entrar no mundo da imaginação e aprender a falar sobre situações hipotéticas. Até lá!</p>
-        </section>
-
-        <!-- Botão Navegação Rodapé -->
-        <button class="nav-btn" onclick="alert('Voltar ao Menu Principal')">⬅ Voltar ao Menu</button>
+        </div>
     </div>
 
-    <!-- SCRIPT DE ÁUDIO OTIMIZADO -->
+    <div class="container" id="lessonBook">
+        <!-- CAMADA SVG TRANSPARENTE PARA DESENHO SOBRE O LIVRO -->
+        <svg id="drawLayer" xmlns="http://www.w3.org/2000/svg"></svg>
+
+        <!-- BOTÕES SUPERIORES: MENU PRINCIPAL + PDF -->
+        <div class="top-actions">
+            <button class="nav-btn" onclick="location.href='https://espaco-liberdade.github.io/inglesipa/'">← Voltar ao Menu Principal</button>
+            <button class="pdf-btn" onclick="printWithNotes()">📄 Salvar como PDF (A4) com Marcações</button>
+        </div>
+
+        <h1>
+            Aula 26: "E Se...?" – Condicionais Zero e Tipo 1 <span class="emoji-large">❓💡</span>
+            <span class="subtitle">("If...?" – Zero and First Conditionals: Real and Probable | Método IPA)</span>
+        </h1>
+
+        <div class="theme-intro">
+            <p><strong>Bem-vindo(a) à Aula 26!</strong> <span class="emoji-small">🌟</span></p>
+            <p>Nesta aula, vamos explorar as <strong>Frases Condicionais (Conditional Sentences)</strong>, que nos permitem falar sobre situações e suas consequências. Focaremos no <strong>Zero Conditional</strong> (usado para <strong>fatos científicos, hábitos e consequências lógicas</strong>) e no <strong>First Conditional</strong> (para falar sobre <strong>planos futuros baseados em condições reais ou prováveis</strong>)! <span class="emoji-small">🔬⚙️➡️</span></p>
+            <p style="margin-bottom: 0;"><strong>✏️ Livro Interativo Completo:</strong> Você pode clicar em <strong>✏️ Caneta / Grifar</strong> para circular palavras, passar marca-texto ou fazer setas diretamente sobre a aula, e também usar as caixas <strong>Minhas Observações</strong> ao fim de cada seção. Tudo fica <strong>salvo automaticamente no navegador</strong> e sai no PDF!</p>
+        </div>
+
+        <!-- BARRA DE GERENCIAMENTO DAS OBSERVAÇÕES E CANETA -->
+        <div class="notes-toolbar">
+            <div class="notes-toolbar-status">
+                <span>📝</span>
+                <span id="notesSummary">Anotações salvas automaticamente (0 seções · 0 traços)</span>
+            </div>
+            <button class="toolbar-btn pen-cta" onclick="openPenDock('pen')">✏️ Ativar Caneta</button>
+            <button class="toolbar-btn" onclick="openPenDock('highlighter')">🖍️ Marca-texto</button>
+            <button class="toolbar-btn" onclick="exportNotesTxt()">💾 Exportar Notas (.txt)</button>
+            <button class="toolbar-btn danger" onclick="showClearConfirm()">🗑️ Limpar Tudo</button>
+
+            <div id="clearConfirmBox" class="inline-confirm">
+                <span><strong>Tem certeza?</strong> Isso apagará todas as suas observações escritas, respostas dos exercícios e desenhos da Aula 26.</span>
+                <div style="display:flex; gap:8px;">
+                    <button class="confirm-yes" onclick="confirmClearAll()">Sim, apagar tudo</button>
+                    <button class="confirm-no" onclick="hideClearConfirm()">Cancelar</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="statusToast" class="toast-banner"></div>
+
+        <h2>26. Explorando as Condições: Zero e First Conditional</h2>
+
+        <!-- ==================== SEÇÃO 26.1: ZERO CONDITIONAL ==================== -->
+        <section id="sec-26-1">
+            <h3>26.1 Verdades Universais e Fatos: Zero Conditional <span class="emoji-small">🌍✔️</span></h3>
+            <p>O <strong>Zero Conditional</strong> é usado para falar sobre coisas que são <strong>sempre verdadeiras</strong>, como fatos científicos, leis da natureza, hábitos ou situações que sempre produzem a mesma consequência.</p>
+            <div class="formula-pill">If / When + Simple Present, ... Simple Present</div>
+            <p>Podemos usar <strong>"when" (quando)</strong> no lugar de <strong>"if" (se)</strong> no Zero Conditional com exatamente o mesmo sentido de certeza.</p>
+
+            <div class="search-box">
+                <input type="text" id="zeroSearch" class="search-input" placeholder="🔍 Filtrar nas 15 frases do Zero Conditional (ex: water, coffee, fire, rain, button)..." onkeyup="filterTable('zeroSearch', 'zero-row')">
+            </div>
+
+            <div class="table-responsive-wrapper">
+                <table class="sentence-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 45%;">Frase em Inglês + Áudio</th>
+                            <th style="width: 55%;">Pronúncia Completa (IPA + Simplificada) e Tradução</th>
+                        </tr>
+                    </thead>
+                    <tbody id="zeroTableBody"></tbody>
+                </table>
+            </div>
+
+            <div class="obs-box empty-note" data-obs-wrapper="obs_26_1">
+                <div class="obs-header">
+                    <label class="obs-title" for="obs_26_1">📝 Minhas Observações – Seção 26.1 (Zero Conditional)</label>
+                    <span class="obs-save-badge" id="badge_obs_26_1">✓ Salvo no navegador</span>
+                </div>
+                <textarea id="obs_26_1" class="obs-textarea" data-section-name="26.1 Zero Conditional" placeholder="Anote suas observações ou crie uma frase sua com um fato/hábito usando Zero Conditional..."></textarea>
+                <div class="obs-print-mirror" id="mirror_obs_26_1"></div>
+            </div>
+        </section>
+
+        <!-- ==================== SEÇÃO 26.2: FIRST CONDITIONAL ==================== -->
+        <section id="sec-26-2">
+            <h3>26.2 Situações Reais ou Prováveis no Futuro: First Conditional <span class="emoji-small">🔮➡️</span></h3>
+            <p>O <strong>First Conditional</strong> é usado para falar sobre situações <strong>reais ou prováveis no futuro</strong> e suas consequências diretas. A condição tem chance real de acontecer.</p>
+            <div class="formula-pill">If + Simple Present, ... will / can / may / might / should + Verbo (base)</div>
+
+            <div class="nota-dica">
+                <h4>🚨 Duas Regras de Ouro das Condicionais (Zero e Tipo 1)</h4>
+                <ul style="margin-bottom: 0;">
+                    <li><strong>Regra da Vírgula:</strong> Quando a frase <strong>começa</strong> com <em>If</em>, usamos vírgula no meio (<em><strong>If</strong> it rains, I'll stay home</em>). Quando o <em>if</em> vai <strong>no meio</strong>, não usamos vírgula (<em>I'll stay home <strong>if</strong> it rains</em>).</li>
+                    <li><strong>Proibido "Will" depois de "If":</strong> Mesmo falando do futuro, o verbo logo depois de <em>If</em> fica no <strong>Presente Simples</strong>! Diga <em>"If it <strong>rains</strong> tomorrow, I will stay home"</em> (NUNCA <em>"If it will rain"</em> ❌).</li>
+                </ul>
+            </div>
+
+            <div class="search-box">
+                <input type="text" id="firstSearch" class="search-input" placeholder="🔍 Filtrar nas 15 frases do First Conditional (ex: exam, taxi, beach, doctor, job, will)..." onkeyup="filterTable('firstSearch', 'first-row')">
+            </div>
+
+            <div class="table-responsive-wrapper">
+                <table class="sentence-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 45%;">Frase em Inglês + Áudio</th>
+                            <th style="width: 55%;">Pronúncia Completa (IPA + Simplificada) e Tradução</th>
+                        </tr>
+                    </thead>
+                    <tbody id="firstTableBody"></tbody>
+                </table>
+            </div>
+
+            <div class="obs-box empty-note" data-obs-wrapper="obs_26_2">
+                <div class="obs-header">
+                    <label class="obs-title" for="obs_26_2">📝 Minhas Observações – Seção 26.2 (First Conditional)</label>
+                    <span class="obs-save-badge" id="badge_obs_26_2">✓ Salvo no navegador</span>
+                </div>
+                <textarea id="obs_26_2" class="obs-textarea" data-section-name="26.2 First Conditional" placeholder="Escreva seus planos futuros usando 'If + presente, ... will...' ou anote suas dúvidas..."></textarea>
+                <div class="obs-print-mirror" id="mirror_obs_26_2"></div>
+            </div>
+        </section>
+
+        <!-- ==================== SEÇÃO 26.3: VOCABULÁRIO (46 CARDS) ==================== -->
+        <section id="sec-26-3">
+            <h3>26.3 Vocabulário da Aula: Condições e Consequências (46 Termos) <span class="emoji-small">📚🔊</span></h3>
+            <p>Toque no botão azul <strong>🔊</strong> de cada card para ouvir a pronúncia americana limpa junto com o IPA e o guia fonético:</p>
+
+            <div class="search-box">
+                <input type="text" id="vocabSearch" class="search-input" placeholder="🔍 Filtrar vocabulário (ex: unless, forecast, melt, postpone, guarantee, clima, promessa)..." onkeyup="filterVocab()">
+            </div>
+
+            <div id="vocabGrid" class="vocab-grid"></div>
+
+            <div class="obs-box empty-note" data-obs-wrapper="obs_26_3">
+                <div class="obs-header">
+                    <label class="obs-title" for="obs_26_3">📝 Minhas Observações – Seção 26.3 (Vocabulário da Aula)</label>
+                    <span class="obs-save-badge" id="badge_obs_26_3">✓ Salvo no navegador</span>
+                </div>
+                <textarea id="obs_26_3" class="obs-textarea" data-section-name="26.3 Vocabulário" placeholder="Anote aqui as palavras novas que você quer revisar ou usar na conversação..."></textarea>
+                <div class="obs-print-mirror" id="mirror_obs_26_3"></div>
+            </div>
+        </section>
+
+        <!-- ==================== SEÇÃO 26.4: TAREFA EXTRA + QUIZ INTERATIVO ==================== -->
+        <section id="sec-26-4" class="extra-task">
+            <h3 style="margin-top:0; border-left-color: var(--purple); color: #6c3483;">26.4 Tarefa Extra: Leitura, Áudio e Quiz Interativo <span class="emoji-small">✍️🎧</span></h3>
+            <p>Leia e escute o texto abaixo sobre planejar uma viagem de fim de semana. Observe como o <strong>Zero Conditional</strong> (regras gerais) e o <strong>First Conditional</strong> (planos para este fim de semana) trabalham juntos!</p>
+
+            <div class="story-card">
+                <div class="story-header">
+                    <strong style="color: #6c3483;">📖 Story: Planning a Weekend Trip</strong>
+                    <button id="storyAudioBtn" class="audio-btn-pill" onclick="toggleStoryAudio()">🔊 Ouvir História Completa</button>
+                </div>
+                <p>When my friends and I plan a weekend trip, we always check the weather first. This is a general rule for us because if the weather <span class="example-word">is</span> bad, we usually <span class="example-word">change</span> our plans. If it <span class="example-word">snows</span> in the mountains, the roads <span class="example-word">get</span> very dangerous. That's a scientific fact. Also, when you <span class="example-word">don't prepare</span> for a trip properly, things often <span class="example-word">go</span> wrong.</p>
+                <p>For this upcoming weekend, our plan depends completely on the forecast. If the forecast <span class="example-word">is</span> good, we <span class="example-word">will go</span> hiking. The trail is beautiful, but it gets muddy if it <span class="example-word">rains</span>. So, if we <span class="example-word">see</span> dark clouds on Saturday morning, we <span class="example-word">will choose</span> an indoor activity instead. We will probably go to the local museum.</p>
+                <p>My friend, Ana, is in charge of the food. If she <span class="example-word">cooks</span>, everyone <span class="example-word">is</span> always happy because her food is delicious. For this trip, if we <span class="example-word">go</span> hiking, she <span class="example-word">will prepare</span> sandwiches and snacks. If we <span class="example-word">stay</span> in the city, we <span class="example-word">will try</span> that new restaurant downtown.</p>
+                <p>I am responsible for transportation. If my car <span class="example-word">is</span> ready from the mechanic, I <span class="example-word">will drive</span>. If it <span class="example-word">isn't</span> ready, we <span class="example-word">will have to</span> take the train. The train is a good option, but if we <span class="example-word">take</span> it, we <span class="example-word">won't be</span> as flexible with our schedule.</p>
+                <p style="margin-bottom:0;">Ultimately, if we <span class="example-word">plan</span> everything carefully, we <span class="example-word">will have</span> a great time, no matter the weather. When friends <span class="example-word">travel</span> together, the most important thing <span class="example-word">is</span> the company. If we <span class="example-word">are</span> together, it <span class="example-word">will be</span> a memorable weekend.</p>
+            </div>
+
+            <div class="quiz-container">
+                <div class="quiz-question">
+                    <p><strong>Quiz 1 (Compreensão do Texto):</strong> According to the text, what will happen if the weather is good for the weekend?</p>
+                    <button class="quiz-btn" onclick="checkQuiz(this, false, 'q1', 'Incorreto! O texto diz que eles têm planos ao ar livre se o tempo colaborar.')">a) They will stay home.</button>
+                    <button class="quiz-btn" onclick="checkQuiz(this, false, 'q1', 'Quase! Eles só vão ao museu local se virem nuvens escuras (tempo ruim).')">b) They will go to the local museum.</button>
+                    <button class="quiz-btn" onclick="checkQuiz(this, false, 'q1', 'Incorreto! Eles não cancelam, apenas mudam para uma atividade em ambiente fechado se chover.')">c) They will cancel the trip.</button>
+                    <button class="quiz-btn" onclick="checkQuiz(this, true, 'q1', 'Correto! O segundo parágrafo afirma: &ldquo;If the forecast is good, we will go hiking.&rdquo; (Eles irão fazer trilha/caminhada).')">d) They will go hiking.</button>
+                    <button class="quiz-btn" onclick="checkQuiz(this, false, 'q1', 'Incorreto! Eles só pegarão o trem se o carro não ficar pronto no mecânico.')">e) They will take the train to another city.</button>
+                    <div id="feedback-q1" class="quiz-feedback"></div>
+                </div>
+
+                <div class="quiz-question">
+                    <p><strong>Quiz 2 (Gramática na Prática):</strong> Qual das frases abaixo está <strong>gramaticalmente CORRETA</strong> no First Conditional?</p>
+                    <button class="quiz-btn" onclick="checkQuiz(this, false, 'q2', 'Cuidado! Nunca colocamos &ldquo;will&rdquo; na mesma parte da frase que o &ldquo;If&rdquo;.')">a) If it will rain tomorrow, we will stay home.</button>
+                    <button class="quiz-btn" onclick="checkQuiz(this, true, 'q2', 'Exato! A oração do &ldquo;If&rdquo; fica no Presente Simples (rains) e a consequência usa futuro com &ldquo;will&rdquo; (will stay).')">b) If it rains tomorrow, we will stay home.</button>
+                    <button class="quiz-btn" onclick="checkQuiz(this, false, 'q2', 'Incorreto! Com &ldquo;it&rdquo; no presente simples afirmativo, o verbo precisa do -S (rains).')">c) If it rain tomorrow, we stay home.</button>
+                    <div id="feedback-q2" class="quiz-feedback"></div>
+                </div>
+            </div>
+
+            <div class="obs-box empty-note" data-obs-wrapper="obs_26_4" style="margin-bottom:0;">
+                <div class="obs-header">
+                    <label class="obs-title" for="obs_26_4">📝 Minhas Observações – Seção 26.4 (Tradução do Texto e Anotações)</label>
+                    <span class="obs-save-badge" id="badge_obs_26_4">✓ Salvo no navegador</span>
+                </div>
+                <textarea id="obs_26_4" class="obs-textarea" data-section-name="26.4 Tarefa Extra (Tradução)" placeholder="Escreva aqui sua tradução do texto ou anote as condicionais que encontrou na história..."></textarea>
+                <div class="obs-print-mirror" id="mirror_obs_26_4"></div>
+            </div>
+        </section>
+
+        <!-- ==================== SEÇÃO 26.5: EXERCÍCIOS PRÁTICOS INTERATIVOS ==================== -->
+        <section id="sec-26-5">
+            <h3>26.5 Exercícios Práticos Finais (Editáveis e Salvos Automaticamente) <span class="emoji-small">📝</span></h3>
+            <div class="secao-exercicios">
+                <h4 style="margin-top:0;">Parte 1: Zero ou First Conditional?</h4>
+                <p>Digite <strong>Z</strong> (Zero Conditional) ou <strong>F</strong> (First Conditional) nos campos abaixo:</p>
+                <ol>
+                    <li>If you heat ice, it melts. (<input type="text" id="ex26_1_1" class="exercise-input short" maxlength="1" placeholder="Z/F">)</li>
+                    <li>If she studies hard, she will get good grades. (<input type="text" id="ex26_1_2" class="exercise-input short" maxlength="1" placeholder="Z/F">)</li>
+                    <li>When I am sad, I listen to music. (<input type="text" id="ex26_1_3" class="exercise-input short" maxlength="1" placeholder="Z/F">)</li>
+                    <li>We will miss the train if we don't leave now. (<input type="text" id="ex26_1_4" class="exercise-input short" maxlength="1" placeholder="Z/F">)</li>
+                </ol>
+
+                <h4>Parte 2: Complete as Frases Condicionais</h4>
+                <p>Complete as lacunas com a forma correta do verbo entre parênteses:</p>
+                <ol>
+                    <li>If it <input type="text" id="ex26_2_1a" class="exercise-input" placeholder="rain"> (rain) tomorrow, we <input type="text" id="ex26_2_1b" class="exercise-input" placeholder="stay"> (stay) home.</li>
+                    <li>Water <input type="text" id="ex26_2_2a" class="exercise-input" placeholder="boil"> (boil) if you <input type="text" id="ex26_2_2b" class="exercise-input" placeholder="heat"> (heat) it to 100°C.</li>
+                    <li>If I <input type="text" id="ex26_2_3a" class="exercise-input" placeholder="see"> (see) her, I <input type="text" id="ex26_2_3b" class="exercise-input" placeholder="tell"> (tell) her you called.</li>
+                </ol>
+
+                <details class="gabarito">
+                    <summary>📖 Ver Gabarito dos Exercícios com Áudio 🔊</summary>
+                    <div class="gabarito-content">
+                        <p><strong>Parte 1:</strong></p>
+                        <p>1. <strong>Z</strong> (Zero Conditional — fato científico). — <em>If you heat ice, it melts.</em> <button class="audio-btn-inline" onclick="playAudio('If you heat ice, it melts.')">🔊</button></p>
+                        <p>2. <strong>F</strong> (First Conditional — consequência provável no futuro com <em>will</em>). — <em>If she studies hard, she will get good grades.</em> <button class="audio-btn-inline" onclick="playAudio('If she studies hard, she will get good grades.')">🔊</button></p>
+                        <p>3. <strong>Z</strong> (Zero Conditional — hábito pessoal sempre verdadeiro). — <em>When I am sad, I listen to music.</em> <button class="audio-btn-inline" onclick="playAudio('When I am sad, I listen to music.')">🔊</button></p>
+                        <p>4. <strong>F</strong> (First Conditional — plano/consequência futura). — <em>We will miss the train if we don't leave now.</em> <button class="audio-btn-inline" onclick="playAudio('We will miss the train if we don\'t leave now.')">🔊</button></p>
+                        <hr style="border:0; border-top:1px solid #e2e8f0; margin:12px 0;">
+                        <p><strong>Parte 2:</strong></p>
+                        <p>1. If it <strong>rains</strong> tomorrow, we <strong>will stay / 'll stay</strong> home. <button class="audio-btn-inline" onclick="playAudio('If it rains tomorrow, we will stay home.')">🔊</button></p>
+                        <p>2. Water <strong>boils</strong> if you <strong>heat</strong> it to 100°C. <button class="audio-btn-inline" onclick="playAudio('Water boils if you heat it to 100 degrees Celsius.')">🔊</button></p>
+                        <p>3. If I <strong>see</strong> her, I <strong>will tell / 'll tell</strong> her you called. <button class="audio-btn-inline" onclick="playAudio('If I see her, I will tell her you called.')">🔊</button></p>
+                    </div>
+                </details>
+            </div>
+
+            <div class="obs-box empty-note" data-obs-wrapper="obs_26_5">
+                <div class="obs-header">
+                    <label class="obs-title" for="obs_26_5">📝 Minhas Observações – Seção 26.5 (Exercícios Práticos)</label>
+                    <span class="obs-save-badge" id="badge_obs_26_5">✓ Salvo no navegador</span>
+                </div>
+                <textarea id="obs_26_5" class="obs-textarea" data-section-name="26.5 Exercícios Práticos" placeholder="Anote seu desempenho nos exercícios ou pontos que precisa revisar..."></textarea>
+                <div class="obs-print-mirror" id="mirror_obs_26_5"></div>
+            </div>
+        </section>
+
+        <!-- ==================== CONCLUSÃO ==================== -->
+        <section id="conclusao">
+            <h3>Conclusão da Aula 26 <span class="emoji-small">🥳</span></h3>
+            <div class="nota-dica">
+                <p><strong>Parabéns por concluir a Aula 26!</strong> Você aprendeu sobre o <strong>Zero Conditional</strong> para falar de fatos científicos, regras e hábitos, e o <strong>First Conditional</strong> para expressar planos futuros reais ou prováveis e suas consequências.</p>
+                <p style="margin-bottom: 0;">Continue praticando a formação dessas frases para usá-las com confiança. Na <strong>Aula 27: "Situações Hipotéticas – Condicional Tipo 2 (Improváveis ou Imaginárias)"</strong>, vamos explorar como falar sobre cenários imaginários. Até lá!</p>
+            </div>
+
+            <div class="obs-box empty-note" data-obs-wrapper="obs_final">
+                <div class="obs-header">
+                    <label class="obs-title" for="obs_final">📝 Observações Gerais e Resumo Pessoal da Aula 26</label>
+                    <span class="obs-save-badge" id="badge_obs_final">✓ Salvo no navegador</span>
+                </div>
+                <textarea id="obs_final" class="obs-textarea" data-section-name="Resumo Geral da Aula 26" placeholder="Espaço livre para seu resumo final da Aula 26, metas de revisão ou anotações pessoais..."></textarea>
+                <div class="obs-print-mirror" id="mirror_obs_final"></div>
+            </div>
+        </section>
+
+        <!-- BOTÕES INFERIORES: MENU PRINCIPAL + PDF -->
+        <div class="top-actions" style="margin-top: 26px;">
+            <button class="nav-btn" onclick="location.href='https://espaco-liberdade.github.io/inglesipa/'">← Voltar ao Menu Principal</button>
+            <button class="pdf-btn" onclick="printWithNotes()">📄 Salvar como PDF (A4) com Marcações</button>
+        </div>
+    </div>
+
     <script>
-        let voices = [];
-        
-        // Função para carregar vozes de forma robusta em mobile/desktop
-        function loadVoices() {
-            voices = window.speechSynthesis.getVoices();
+        // =========================================================================
+        // 1. DADOS COMPLETOS DA AULA 26 (ZERO + FIRST + 46 PALAVRAS DE VOCABULÁRIO)
+        // =========================================================================
+        const zeroSentences = [
+            ["If you <b>heat</b> water to 100 degrees Celsius, it <b>boils</b>.", "/ɪf juː hiːt ˈwɔːtər tuː wʌn ˈhʌndrəd dɪˈɡriːz ˈselsiəs ɪt bɔɪlz/", "(ÊF iúu RÍIT UÓ-tãr túu uãn RÂN-drêd di-GRÍIZ SÉL-si-ãs, êt BÓI-õlz)", "Se você aquece água a 100 graus Celsius, ela ferve.", "Fato científico: ambos os verbos no Presente Simples (heat / boils)."],
+            ["Plants <b>die</b> if they <b>don't get</b> enough water.", "/plænts daɪ ɪf ðeɪ doʊnt ɡet ɪˈnʌf ˈwɔːtər/", "(PLÉNTS DÁI êf dhêi DÔUNT GUÉT i-NÂF UÓ-tãr)", "As plantas morrem se não recebem água suficiente.", "Sem vírgula porque 'if' está no meio da frase."],
+            ["If you <b>mix</b> red and yellow, you <b>get</b> orange.", "/ɪf juː mɪks red ænd ˈjeloʊ juː ɡet ˈɔːrɪndʒ/", "(ÊF iúu MÊKS RÉD énd IÉ-lôu, iúu GUÉT Ó-rêndj)", "Se você mistura vermelho e amarelo, você obtém laranja.", "Resultado sempre igual: mix -> get."],
+            ["When I <b>drink</b> too much coffee, I <b>can't sleep</b> well.", "/wen aɪ drɪŋk tuː mʌtʃ ˈkɔːfi aɪ kænt sliːp wel/", "(UÉN ái DRÊNK TÚU MÂTCH CÓ-fi, ái KÉNT SLÍIP UÉL)", "Quando eu bebo muito café, não consigo dormir bem.", "Uso de 'When' no lugar de 'If' para hábitos pessoais."],
+            ["If you <b>don't eat</b>, you <b>get</b> hungry.", "/ɪf juː doʊnt iːt juː ɡet ˈhʌŋɡri/", "(ÊF iúu DÔUNT ÍIT, iúu GUÉT RÂN-gri)", "Se você não come, você fica com fome.", "Negativa no presente com 'don't' + transição com 'get hungry'."],
+            ["Metals <b>expand</b> if you <b>heat</b> them.", "/ˈmetlz ɪkˈspænd ɪf juː hiːt ðəm/", "(MÉ-tõlz ek-SPÉND êf iúu RÍIT dhãm)", "Metais expandem se você os aquece.", "Lei física universal (plural: metals expand)."],
+            ["If it <b>rains</b>, the ground <b>gets</b> wet.", "/ɪf ɪt reɪnz ðə ɡraʊnd ɡets wet/", "(ÊF êt RÊINZ, dhã GRÁUND GUÉTS UÉT)", "Se chove, o chão fica molhado.", "Atenção ao -S da 3ª pessoa singular em 'rains' e 'gets'."],
+            ["When the sun <b>goes down</b>, it <b>gets</b> dark.", "/wen ðə sʌn ɡoʊz daʊn ɪt ɡets dɑːrk/", "(UÉN dhã SÂN GÔUZ DÁUN, êt GUÉTS DÁRK)", "Quando o sol se põe, fica escuro.", "Phrasal verb 'go down' (pôr-se) na 3ª pessoa: goes down."],
+            ["If you <b>touch</b> fire, you <b>get</b> burned.", "/ɪf juː tʌtʃ ˈfaɪər juː ɡet bɜːrnd/", "(ÊF iúu TÂTCH FÁI-ãr, iúu GUÉT BÃRND)", "Se você toca no fogo, você se queima.", "Voz passiva dinâmica com GET: 'get burned' (queimar-se)."],
+            ["People <b>get</b> thirsty if they <b>don't drink</b> enough water.", "/ˈpiːpl ɡet ˈθɜːrsti ɪf ðeɪ doʊnt drɪŋk ɪˈnʌf ˈwɔːtər/", "(PÍI-põl GUÉT THÃRS-ti êf dhêi DÔUNT DRÊNK i-NÂF UÓ-tãr)", "As pessoas ficam com sede se não bebem água suficiente.", "People é sempre plural em inglês (people get / they don't)."],
+            ["If you <b>press</b> that button, the machine <b>turns on</b>.", "/ɪf juː pres ðæt ˈbʌtn ðə məˈʃiːn tɜːrnz ɑːn/", "(ÊF iúu PRÉS DHÉT BÂ-tãn, dhã mã-XÍIN TÃRNZ ÓN)", "Se você aperta aquele botão, a máquina liga.", "Ótimo para explicar instruções de aparelhos e máquinas."],
+            ["Computers <b>get</b> slow if you <b>open</b> too many apps.", "/kəmˈpjuːtərz ɡet sloʊ ɪf juː ˈoʊpən tuː ˈmeni æps/", "(cãm-PIÚU-tãrz GUÉT SLÔU êf iúu ÔU-pãn TÚU MÉ-ni ÉPS)", "Computadores ficam lentos se você abre muitos aplicativos.", "Consequência lógica no dia a dia com tecnologia."],
+            ["If you <b>don't sleep</b> enough, you <b>feel</b> tired the next day.", "/ɪf juː doʊnt sliːp ɪˈnʌf juː fiːl ˈtaɪərd ðə nekst deɪ/", "(ÊF iúu DÔUNT SLÍIP i-NÂF, iúu FÍIL TÁI-ãrd dhã NÉKST DÊI)", "Se você não dorme o suficiente, você se sente cansado no dia seguinte.", "Relação direta de causa e efeito."],
+            ["When it <b>is</b> a holiday, the shops <b>are</b> usually closed.", "/wen ɪt ɪz ə ˈhɑːlədeɪ ðə ʃɑːps ɑːr ˈjuːʒuəli kloʊzd/", "(UÉN êt êz ã RÓ-lĩ-dei, dhã XÓPS ár IÚU-jua-li CLÔUZD)", "Quando é feriado, as lojas geralmente estão fechadas.", "Zero Conditional usando o verbo To Be (is / are)."],
+            ["If you <b>add</b> sugar to tea, it <b>tastes</b> sweet.", "/ɪf juː æd ˈʃʊɡər tə tiː ɪt teɪsts swiːt/", "(ÊF iúu ÉD XÚ-gãr tã TÍI, êt TÊISTS SUÍIT)", "Se você adiciona açúcar ao chá, ele fica com gosto doce.", "Verbo de sentido 'taste' na 3ª pessoa: it tastes sweet."]
+        ];
+
+        const firstSentences = [
+            ["If it <b>rains</b> tomorrow, I <b>will stay</b> home.", "/ɪf ɪt reɪnz təˈmɑːroʊ aɪ wɪl steɪ hoʊm/", "(ÊF êt RÊINZ tã-MÓ-rôu, ái uêl STÊI RÔUM)", "Se chover amanhã, eu ficarei em casa.", "Mesmo com 'tomorrow', após 'If' usamos Presente (rains)!"],
+            ["If you <b>study</b> hard, you <b>will pass</b> the exam.", "/ɪf juː ˈstʌdi hɑːrd juː wɪl pæs ði ɪɡˈzæm/", "(ÊF iúu STÂ-di RÁRD, iúu uêl PÉS dhí eg-ZÉM)", "Se você estudar muito, você passará na prova.", "Previsão provável baseada em esforço real."],
+            ["If she <b>saves</b> enough money, she <b>will buy</b> a new car.", "/ɪf ʃiː seɪvz ɪˈnʌf ˈmʌni ʃiː wɪl baɪ ə nuː kɑːr/", "(ÊF xíi SÊIVZ i-NÂF MÂ-ni, xíi uêl BÁI ã NÚU CÁR)", "Se ela economizar dinheiro suficiente, ela comprará um carro novo.", "3ª pessoa 'she saves' -> consequência futura 'she will buy'."],
+            ["If we <b>miss</b> the bus, we <b>will take</b> a taxi.", "/ɪf wiː mɪs ðə bʌs wiː wɪl teɪk ə ˈtæksi/", "(ÊF uíi MÊS dhã BÂS, uíi uêl TÊIK ã TÉK-si)", "Se nós perdermos o ônibus, nós pegaremos um táxi.", "Plano B provável (perder transporte = miss; pegar táxi = take)."],
+            ["If they <b>don't hurry</b>, they <b>will be</b> late.", "/ɪf ðeɪ doʊnt ˈhɜːri ðeɪ wɪl biː leɪt/", "(ÊF dhêi DÔUNT RÃ-ri, dhêi uêl bíi LÊIT)", "Se eles não se apressarem, eles se atrasarão.", "Condição negativa no presente (don't hurry) + aviso futuro."],
+            ["I <b>will call</b> you if I <b>need</b> help.", "/aɪ wɪl kɔːl juː ɪf aɪ niːd help/", "(ÁI uêl CÓL iúu êf ái NÍID RÉLP)", "Eu te ligarei se precisar de ajuda.", "Ordem invertida: consequência primeiro, 'if' no meio (sem vírgula)."],
+            ["She <b>will be</b> happy if you <b>come</b> to her party.", "/ʃiː wɪl biː ˈhæpi ɪf juː kʌm tə hər ˈpɑːrti/", "(XÍI uêl bíi RÉ-pi êf iúu CÂM tã rãr PÁR-ti)", "Ela ficará feliz se você vier à festa dela.", "Na fala rápida, 'She will' vira 'She'll' (XÍIL)."],
+            ["If he <b>doesn't study</b>, he <b>won't get</b> a good grade.", "/ɪf hiː ˈdʌznt ˈstʌdi hiː woʊnt ɡet ə ɡʊd ɡreɪd/", "(ÊF ríi DÂ-zãnt STÂ-di, ríi UÔUNT GUÉT ã GÚD GRÊID)", "Se ele não estudar, ele não tirará uma boa nota.", "Negativa dupla: doesn't (3ª pessoa) + won't (will not)."],
+            ["We <b>will go</b> to the beach if the weather <b>is</b> nice.", "/wiː wɪl ɡoʊ tə ðə biːtʃ ɪf ðə ˈweðər ɪz naɪs/", "(UÍI uêl GÔU tã dhã BÍITCH êf dhã UÉ-dhãr êz NÁIS)", "Nós iremos à praia se o tempo estiver bom.", "Plano de lazer condicionado ao clima."],
+            ["If you <b>eat</b> too much candy, you <b>will feel</b> sick.", "/ɪf juː iːt tuː mʌtʃ ˈkændi juː wɪl fiːl sɪk/", "(ÊF iúu ÍIT TÚU MÂTCH KÉN-di, iúu uêl FÍIL SÊK)", "Se você comer muito doce, você se sentirá mal.", "Alerta clássico de pai e mãe usando First Conditional!"],
+            ["If I <b>finish</b> my work early, I <b>will join</b> you.", "/ɪf aɪ ˈfɪnɪʃ maɪ wɜːrk ˈɜːrli aɪ wɪl dʒɔɪn juː/", "(ÊF ái FÊ-nêsh mái UÃRK ÃR-li, ái uêl DJÓIN iúu)", "Se eu terminar meu trabalho cedo, eu me juntarei a vocês.", "Join someone = juntar-se a alguém (sem preposição!)."],
+            ["If they <b>invite</b> us, we <b>can go</b> to the event.", "/ɪf ðeɪ ɪnˈvaɪt ʌs wiː kæn ɡoʊ tə ði ɪˈvent/", "(ÊF dhêi în-VÁIT âs, uíi KÉN GÔU tã dhí i-VÉNT)", "Se eles nos convidarem, nós podemos ir ao evento.", "Modal 'can' substituindo 'will' para expressar possibilidade."],
+            ["If the weather <b>is</b> bad, the trip <b>might be</b> canceled.", "/ɪf ðə ˈweðər ɪz bæd ðə trɪp maɪt biː ˈkænsld/", "(ÊF dhã UÉ-dhãr êz BÉD, dhã TRÊP MÁIT bíi KÉN-sõld)", "Se o tempo estiver ruim, a viagem pode ser cancelada.", "Modal 'might' indica possibilidade incerta (talvez seja cancelada)."],
+            ["You <b>should see</b> a doctor if you <b>feel</b> sick.", "/juː ʃʊd siː ə ˈdɑːktər ɪf juː fiːl sɪk/", "(IÚU XÚD SÍI ã DÓK-tãr êf iúu FÍIL SÊK)", "Você deveria ver um médico se você se sentir doente.", "Modal 'should' usado no First Conditional para dar conselho."],
+            ["If she <b>passes</b> the interview, she <b>will get</b> the job.", "/ɪf ʃiː ˈpæsɪz ði ˈɪntərvjuː ʃiː wɪl ɡet ðə dʒɑːb/", "(ÊF xíi PÉ-sêz dhí ÊN-tãr-viu, xíi uêl GUÉT dhã DJÓB)", "Se ela passar na entrevista, ela conseguirá o emprego.", "Verbo 'pass' ganha '-es' na 3ª pessoa: she passes."]
+        ];
+
+        const vocabWords = [
+            ["Condition", "/kənˈdɪʃn/", "(cãn-DÊ-shãn)", "Condição"],
+            ["Result", "/rɪˈzʌlt/", "(ri-ZÂLT)", "Resultado"],
+            ["Consequence", "/ˈkɑːnsəkwens/", "(CÓN-sã-cuens)", "Consequência"],
+            ["Effect", "/ɪˈfekt/", "(i-FÉKT)", "Efeito"],
+            ["Probable / Likely", "/ˈprɑːbəbl/ · /ˈlaɪkli/", "(PRÓ-bã-bõl / LÁI-kli)", "Provável"],
+            ["Unlikely", "/ʌnˈlaɪkli/", "(ân-LÁI-kli)", "Improvável"],
+            ["Certain / Certainty", "/ˈsɜːrtn/ · /ˈsɜːrtnti/", "(SÃR-tãn / SÃR-tãn-ti)", "Certo / Certeza"],
+            ["Uncertainty", "/ʌnˈsɜːrtnti/", "(ân-SÃR-tãn-ti)", "Incerteza"],
+            ["Unless", "/ənˈles/", "(ãn-LÉS)", "A menos que"],
+            ["As long as", "/æz lɔːŋ æz/", "(éz LÓN éz)", "Contanto que"],
+            ["Provided that", "/prəˈvaɪdɪd ðæt/", "(prõ-VÁI-dêd dhét)", "Desde que"],
+            ["In case", "/ɪn keɪs/", "(în KÊIS)", "Caso / Por precaução"],
+            ["Weather", "/ˈweðər/", "(UÉ-dhãr)", "Tempo (clima)"],
+            ["Forecast", "/ˈfɔːrkæst/", "(FÓR-kést)", "Previsão"],
+            ["Plan", "/plæn/", "(PLÉN)", "Plano"],
+            ["Decide", "/dɪˈsaɪd/", "(dĩ-SÁID)", "Decidir"],
+            ["Happen / Occur", "/ˈhæpən/ · /əˈkɜːr/", "(RÉ-pãn / õ-CÃR)", "Acontecer"],
+            ["Depend on", "/dɪˈpend ɑːn/", "(dĩ-PÉND ón)", "Depender de"],
+            ["Heat", "/hiːt/", "(RÍIT)", "Aquecer"],
+            ["Freeze", "/friːz/", "(FRÍIZ)", "Congelar"],
+            ["Boil", "/bɔɪl/", "(BÓI-õl)", "Ferver"],
+            ["Melt", "/melt/", "(MÉLT)", "Derreter"],
+            ["Mix", "/mɪks/", "(MÊKS)", "Misturar"],
+            ["Separate", "/ˈsepəreɪt/", "(SÉ-pã-reit)", "Separar"],
+            ["Pass", "/pæs/", "(PÉS)", "Passar (em prova)"],
+            ["Fail", "/feɪl/", "(FÊI-õl)", "Falhar / Reprovar"],
+            ["Succeed", "/səkˈsiːd/", "(sãk-SÍID)", "Ter sucesso"],
+            ["Achieve", "/əˈtʃiːv/", "(ã-TCHÍIV)", "Alcançar"],
+            ["Save", "/seɪv/", "(SÊIV)", "Economizar"],
+            ["Spend", "/spend/", "(SPÉND)", "Gastar"],
+            ["Hurry", "/ˈhɜːri/", "(RÃ-ri)", "Apressar-se"],
+            ["Delay", "/dɪˈleɪ/", "(dĩ-LÊI)", "Atrasar"],
+            ["Cancel", "/ˈkænsl/", "(KÉN-sõl)", "Cancelar"],
+            ["Postpone", "/poʊstˈpoʊn/", "(pôust-PÔUN)", "Adiar"],
+            ["Possibility", "/ˌpɑːsəˈbɪləti/", "(pó-sã-BÊ-lã-ti)", "Possibilidade"],
+            ["Alternative", "/ɔːlˈtɜːrnətɪv/", "(ól-TÃR-nã-têv)", "Alternativa"],
+            ["Fact", "/fækt/", "(FÉKT)", "Fato"],
+            ["Habit", "/ˈhæbɪt/", "(RÉ-bêt)", "Hábito"],
+            ["Science", "/ˈsaɪəns/", "(SÁI-ãns)", "Ciência"],
+            ["Logic", "/ˈlɑːdʒɪk/", "(LÓ-djêk)", "Lógica"],
+            ["Real", "/ˈriːəl/", "(RÍI-õl)", "Real"],
+            ["Imaginary", "/ɪˈmædʒɪneri/", "(i-MÉ-djĩ-ne-ri)", "Imaginário"],
+            ["Guarantee", "/ˌɡærənˈtiː/", "(gué-rãn-TÍI)", "Garantia"],
+            ["Threat", "/θret/", "(THRÉT)", "Ameaça"],
+            ["Promise", "/ˈprɑːmɪs/", "(PRÓ-mês)", "Promessa"],
+            ["Warning", "/ˈwɔːrnɪŋ/", "(UÓR-nin)", "Aviso"]
+        ];
+
+        const fullStoryText = `When my friends and I plan a weekend trip, we always check the weather first. This is a general rule for us because if the weather is bad, we usually change our plans. If it snows in the mountains, the roads get very dangerous. That's a scientific fact. Also, when you don't prepare for a trip properly, things often go wrong. For this upcoming weekend, our plan depends completely on the forecast. If the forecast is good, we will go hiking. The trail is beautiful, but it gets muddy if it rains. So, if we see dark clouds on Saturday morning, we will choose an indoor activity instead. We will probably go to the local museum. My friend, Ana, is in charge of the food. If she cooks, everyone is always happy because her food is delicious. For this trip, if we go hiking, she will prepare sandwiches and snacks. If we stay in the city, we will try that new restaurant downtown. I am responsible for transportation. If my car is ready from the mechanic, I will drive. If it isn't ready, we will have to take the train. The train is a good option, but if we take it, we won't be as flexible with our schedule. Ultimately, if we plan everything carefully, we will have a great time, no matter the weather. When friends travel together, the most important thing is the company. If we are together, it will be a memorable weekend.`;
+
+        // =========================================================================
+        // 2. RENDERIZAÇÃO DAS TABELAS E DOS 46 CARDS DE VOCABULÁRIO
+        // =========================================================================
+        function renderSentenceTable(list, tbodyId, rowClass, badgeExtra, audioPrefix) {
+            const tbody = document.getElementById(tbodyId);
+            tbody.innerHTML = list.map((item, idx) => {
+                const cleanText = item[0].replace(/<\/?b>/g, '');
+                const searchData = `${cleanText} ${item[3]} ${item[4]}`.toLowerCase();
+                return `
+                <tr class="${rowClass}" data-search="${searchData.replace(/"/g, '&quot;')}">
+                    <td>
+                        <span class="num-badge ${badgeExtra}">#${idx + 1}</span>
+                        <span class="sentence-en">${item[0]}</span>
+                        <button class="audio-btn-inline" onclick="playTableAudio('${audioPrefix}', ${idx})" title="Ouvir frase #${idx + 1}">🔊</button>
+                    </td>
+                    <td>
+                        <span class="ipa-symbol">${item[1]}</span>
+                        <span class="character-portuguese-phonetics">${item[2]}</span>
+                        <span class="details-translation">${item[3]}</span>
+                        <span class="mini-note">💡 ${item[4]}</span>
+                    </td>
+                </tr>`;
+            }).join('');
         }
 
-        // Tenta carregar imediatamente
-        loadVoices();
+        function renderVocabGrid() {
+            const grid = document.getElementById('vocabGrid');
+            grid.innerHTML = vocabWords.map((v, idx) => {
+                const searchData = `${v[0]} ${v[3]}`.toLowerCase();
+                return `
+                <div class="vocab-item" data-search="${searchData.replace(/"/g, '&quot;')}">
+                    <div class="vocab-text">
+                        <span class="vocab-en">${v[0]}</span>
+                        <span class="vocab-ipa">${v[1]}</span>
+                        <span class="vocab-phon">${v[2]}</span>
+                        <span class="vocab-pt">${v[3]}</span>
+                    </div>
+                    <button class="audio-btn-round" onclick="playVocabAudio(${idx})" title="Ouvir ${v[0]}">🔊</button>
+                </div>`;
+            }).join('');
+        }
 
-        // Garante o carregamento assíncrono (crítico para Android/Chrome)
-        if (window.speechSynthesis.onvoiceschanged !== undefined) {
+        function filterTable(inputId, rowClass) {
+            const q = document.getElementById(inputId).value.toLowerCase();
+            document.querySelectorAll('.' + rowClass).forEach(row => {
+                row.style.display = row.getAttribute('data-search').includes(q) ? '' : 'none';
+            });
+            syncSvgSize();
+        }
+
+        function filterVocab() {
+            const q = document.getElementById('vocabSearch').value.toLowerCase();
+            document.querySelectorAll('.vocab-item').forEach(card => {
+                card.style.display = card.getAttribute('data-search').includes(q) ? 'flex' : 'none';
+            });
+            syncSvgSize();
+        }
+
+        // =========================================================================
+        // 3. SISTEMA DE CANETA / MARCA-TEXTO VETORIAL (PAINT SOBRE O LIVRO)
+        // =========================================================================
+        const STORAGE_PREFIX = 'inglesipa_aula26_';
+        const DRAWINGS_KEY = 'drawings_v1';
+        const svgNS = 'http://www.w3.org/2000/svg';
+        const drawLayer = document.getElementById('drawLayer');
+        const lessonBook = document.getElementById('lessonBook');
+
+        let penDockOpen = false;
+        let currentTool = 'pen'; // 'pen' | 'highlighter' | 'eraser'
+        let currentColor = '#e11d48';
+        let currentPenSize = 4;
+        let strokesHidden = false;
+        let strokes = []; // [{ id, tool, color, width, points: [[x, y], ...] }]
+        let isDrawing = false;
+        let isErasing = false;
+        let activeStroke = null;
+        let activePathEl = null;
+
+        function syncSvgSize() {
+            if (!lessonBook || !drawLayer) return;
+            const w = lessonBook.clientWidth;
+            const h = lessonBook.scrollHeight;
+            drawLayer.setAttribute('width', w);
+            drawLayer.setAttribute('height', h);
+            drawLayer.style.height = h + 'px';
+        }
+
+        function buildSmoothPath(points) {
+            if (!points || points.length === 0) return '';
+            if (points.length === 1) {
+                const [x, y] = points[0];
+                return `M ${x} ${y} L ${x + 0.1} ${y + 0.1}`;
+            }
+            let d = `M ${points[0][0].toFixed(1)} ${points[0][1].toFixed(1)}`;
+            for (let i = 1; i < points.length - 1; i++) {
+                const midX = ((points[i][0] + points[i + 1][0]) / 2).toFixed(1);
+                const midY = ((points[i][1] + points[i + 1][1]) / 2).toFixed(1);
+                d += ` Q ${points[i][0].toFixed(1)} ${points[i][1].toFixed(1)}, ${midX} ${midY}`;
+            }
+            const last = points[points.length - 1];
+            d += ` L ${last[0].toFixed(1)} ${last[1].toFixed(1)}`;
+            return d;
+        }
+
+        function createPathElement(stroke) {
+            const path = document.createElementNS(svgNS, 'path');
+            path.setAttribute('d', buildSmoothPath(stroke.points));
+            path.setAttribute('fill', 'none');
+            path.setAttribute('stroke', stroke.color);
+            path.setAttribute('stroke-linecap', 'round');
+            path.setAttribute('stroke-linejoin', 'round');
+            path.setAttribute('data-stroke-id', stroke.id);
+
+            if (stroke.tool === 'highlighter') {
+                path.setAttribute('stroke-width', stroke.width * 4.5);
+                path.setAttribute('stroke-opacity', '0.38');
+                path.classList.add('stroke-highlighter');
+            } else {
+                path.setAttribute('stroke-width', stroke.width);
+                path.setAttribute('stroke-opacity', '0.92');
+            }
+            return path;
+        }
+
+        function renderAllStrokes() {
+            drawLayer.innerHTML = '';
+            strokes.forEach(s => {
+                drawLayer.appendChild(createPathElement(s));
+            });
+            updateNotesSummary();
+        }
+
+        function saveStrokes() {
+            try {
+                // Arredonda coordenadas para manter o JSON bem compacto no navegador
+                const compact = strokes.map(s => ({
+                    id: s.id,
+                    tool: s.tool,
+                    color: s.color,
+                    width: s.width,
+                    points: s.points.map(p => [Math.round(p[0] * 10) / 10, Math.round(p[1] * 10) / 10])
+                }));
+                window.localStorage.setItem(STORAGE_PREFIX + DRAWINGS_KEY, JSON.stringify(compact));
+            } catch (e) {
+                console.warn('Não foi possível salvar os desenhos no localStorage:', e);
+            }
+            updateNotesSummary();
+        }
+
+        function loadStrokes() {
+            try {
+                const raw = window.localStorage.getItem(STORAGE_PREFIX + DRAWINGS_KEY);
+                if (raw) {
+                    const parsed = JSON.parse(raw);
+                    if (Array.isArray(parsed)) {
+                        strokes = parsed;
+                        renderAllStrokes();
+                    }
+                }
+            } catch (e) {
+                strokes = [];
+            }
+        }
+
+        function getRelativePoint(e) {
+            const rect = lessonBook.getBoundingClientRect();
+            return [e.clientX - rect.left, e.clientY - rect.top];
+        }
+
+        function eraseAtPoint(x, y) {
+            const threshold = 16;
+            const beforeLen = strokes.length;
+            strokes = strokes.filter(stroke => {
+                const hitRadius = stroke.tool === 'highlighter' ? Math.max(threshold, stroke.width * 2.5) : threshold;
+                for (let i = 0; i < stroke.points.length; i++) {
+                    const dx = stroke.points[i][0] - x;
+                    const dy = stroke.points[i][1] - y;
+                    if (dx * dx + dy * dy <= hitRadius * hitRadius) {
+                        return false; // Remove este traço
+                    }
+                }
+                return true;
+            });
+            if (strokes.length !== beforeLen) {
+                renderAllStrokes();
+                saveStrokes();
+            }
+        }
+
+        drawLayer.addEventListener('pointerdown', (e) => {
+            if (!penDockOpen) return;
+            if (strokesHidden) {
+                toggleDrawingsVisibility();
+            }
+            e.preventDefault();
+            drawLayer.setPointerCapture(e.pointerId);
+            const [x, y] = getRelativePoint(e);
+
+            if (currentTool === 'eraser') {
+                isErasing = true;
+                eraseAtPoint(x, y);
+                return;
+            }
+
+            isDrawing = true;
+            activeStroke = {
+                id: Date.now().toString(36) + Math.random().toString(36).slice(2, 6),
+                tool: currentTool,
+                color: currentColor,
+                width: currentPenSize,
+                points: [[x, y]]
+            };
+            activePathEl = createPathElement(activeStroke);
+            drawLayer.appendChild(activePathEl);
+        });
+
+        drawLayer.addEventListener('pointermove', (e) => {
+            if (!penDockOpen) return;
+            const [x, y] = getRelativePoint(e);
+
+            if (isErasing && currentTool === 'eraser') {
+                e.preventDefault();
+                eraseAtPoint(x, y);
+                return;
+            }
+
+            if (!isDrawing || !activeStroke || !activePathEl) return;
+            e.preventDefault();
+
+            const pts = activeStroke.points;
+            const prev = pts[pts.length - 1];
+            const distSq = (x - prev[0]) ** 2 + (y - prev[1]) ** 2;
+            // Evita excesso de pontos idênticos para manter suavidade e leveza
+            if (distSq >= 9) {
+                pts.push([x, y]);
+                activePathEl.setAttribute('d', buildSmoothPath(pts));
+            }
+        });
+
+        function finishPointerAction(e) {
+            if (isErasing) {
+                isErasing = false;
+                return;
+            }
+            if (!isDrawing || !activeStroke) return;
+            isDrawing = false;
+            strokes.push(activeStroke);
+            activeStroke = null;
+            activePathEl = null;
+            saveStrokes();
+        }
+
+        drawLayer.addEventListener('pointerup', finishPointerAction);
+        drawLayer.addEventListener('pointercancel', finishPointerAction);
+
+        function openPenDock(initialTool) {
+            syncSvgSize();
+            penDockOpen = true;
+            document.getElementById('penDock').classList.add('open');
+            document.getElementById('penFab').classList.add('is-open');
+            setDrawTool(initialTool || 'pen');
+            if (initialTool === 'highlighter') {
+                // Sugere amarelo automaticamente se o usuário clicou direto em Marca-texto
+                const yellowSwatch = document.querySelector('.color-swatch[data-color="#facc15"]');
+                if (yellowSwatch) setDrawColor('#facc15', yellowSwatch);
+            }
+        }
+
+        function closePenDock() {
+            penDockOpen = false;
+            isDrawing = false;
+            isErasing = false;
+            drawLayer.classList.remove('active-pen', 'active-eraser');
+            document.getElementById('penDock').classList.remove('open');
+            document.getElementById('penFab').classList.remove('is-open');
+            hideClearDrawConfirm();
+        }
+
+        function setDrawTool(tool) {
+            currentTool = tool;
+            const penBtn = document.getElementById('toolPenBtn');
+            const hlBtn = document.getElementById('toolHighlightBtn');
+            const erBtn = document.getElementById('toolEraserBtn');
+            const banner = document.getElementById('penModeBanner');
+
+            penBtn.className = 'dock-btn';
+            hlBtn.className = 'dock-btn';
+            erBtn.className = 'dock-btn';
+            drawLayer.classList.remove('active-pen', 'active-eraser');
+
+            if (tool === 'pen') {
+                penBtn.classList.add('active');
+                drawLayer.classList.add('active-pen');
+                banner.textContent = '✏️ Modo Caneta ATIVO — Circule palavras ou desenhe sobre a aula (clique em "Voltar à Leitura" para rolar/clicar nos áudios).';
+            } else if (tool === 'highlighter') {
+                hlBtn.classList.add('active-hl');
+                drawLayer.classList.add('active-pen');
+                banner.textContent = '🖍️ Modo Marca-Texto ATIVO — Arraste sobre frases ou regras para destacar sem cobrir o texto!';
+            } else {
+                erBtn.classList.add('active-er');
+                drawLayer.classList.add('active-eraser');
+                banner.textContent = '🧹 Modo Borracha ATIVO — Clique ou arraste sobre qualquer traço colorido para apagá-lo.';
+            }
+        }
+
+        function setDrawColor(hex, btnEl) {
+            currentColor = hex;
+            document.querySelectorAll('.color-swatch').forEach(s => s.classList.remove('selected'));
+            if (btnEl) btnEl.classList.add('selected');
+            if (currentTool === 'eraser') setDrawTool('pen');
+        }
+
+        function setPenSize(size, btnEl) {
+            currentPenSize = size;
+            document.querySelectorAll('.size-pill').forEach(p => p.classList.remove('selected'));
+            if (btnEl) btnEl.classList.add('selected');
+        }
+
+        function undoLastStroke() {
+            if (strokes.length === 0) {
+                showToast('Não há nenhum traço para desfazer.');
+                return;
+            }
+            strokes.pop();
+            renderAllStrokes();
+            saveStrokes();
+        }
+
+        function toggleDrawingsVisibility() {
+            strokesHidden = !strokesHidden;
+            drawLayer.classList.toggle('hidden-strokes', strokesHidden);
+            const btn = document.getElementById('toggleVisBtn');
+            btn.textContent = strokesHidden ? '👁️ Mostrar traços' : '👁️ Ocultar traços';
+        }
+
+        function showClearDrawConfirm() {
+            document.getElementById('clearDrawConfirm').classList.add('show');
+        }
+        function hideClearDrawConfirm() {
+            document.getElementById('clearDrawConfirm').classList.remove('show');
+        }
+        function confirmClearDrawings() {
+            strokes = [];
+            renderAllStrokes();
+            saveStrokes();
+            hideClearDrawConfirm();
+            showToast('🧹 Todos os desenhos e grifos da Aula 26 foram apagados.');
+        }
+
+        // =========================================================================
+        // 4. SISTEMA DE OBSERVAÇÕES AUTO-SALVAS (LOCALSTORAGE + FALLBACK COOKIES)
+        // =========================================================================
+        const saveTimers = {};
+
+        function saveValue(key, val) {
+            const fullKey = STORAGE_PREFIX + key;
+            try {
+                window.localStorage.setItem(fullKey, val);
+            } catch (e) {
+                try {
+                    const encoded = encodeURIComponent(val.slice(0, 1500));
+                    document.cookie = `${fullKey}=${encoded}; max-age=31536000; path=/; SameSite=Lax`;
+                } catch (err) {
+                    console.warn('Armazenamento indisponível:', err);
+                }
+            }
+        }
+
+        function loadValue(key) {
+            const fullKey = STORAGE_PREFIX + key;
+            try {
+                const stored = window.localStorage.getItem(fullKey);
+                if (stored !== null) return stored;
+            } catch (e) {}
+            try {
+                const match = document.cookie.match(new RegExp('(?:^|; )' + fullKey.replace(/[.$?*|{}()[\]\\/+^]/g, '\\$&') + '=([^;]*)'));
+                return match ? decodeURIComponent(match[1]) : '';
+            } catch (e) {
+                return '';
+            }
+        }
+
+        function deleteValue(key) {
+            const fullKey = STORAGE_PREFIX + key;
+            try { window.localStorage.removeItem(fullKey); } catch (e) {}
+            try { document.cookie = `${fullKey}=; max-age=0; path=/; SameSite=Lax`; } catch (e) {}
+        }
+
+        function syncNoteMirror(textarea) {
+            const id = textarea.id;
+            const mirror = document.getElementById('mirror_' + id);
+            const wrapper = document.querySelector(`[data-obs-wrapper="${id}"]`);
+            const text = textarea.value.trim();
+
+            if (mirror) mirror.textContent = textarea.value;
+            if (wrapper) {
+                if (text.length > 0) {
+                    wrapper.classList.add('has-note');
+                    wrapper.classList.remove('empty-note');
+                } else {
+                    wrapper.classList.remove('has-note');
+                    wrapper.classList.add('empty-note');
+                }
+            }
+        }
+
+        function updateNotesSummary() {
+            const textareas = document.querySelectorAll('.obs-textarea');
+            let filled = 0;
+            textareas.forEach(ta => {
+                if (ta.value.trim().length > 0) filled++;
+            });
+            const el = document.getElementById('notesSummary');
+            if (el) {
+                el.textContent = `Salvo automaticamente (${filled}/${textareas.length} observações · ${strokes.length} traços da caneta)`;
+            }
+        }
+
+        function initPersistentFields() {
+            document.querySelectorAll('.obs-textarea').forEach(ta => {
+                const saved = loadValue(ta.id);
+                if (saved) ta.value = saved;
+                syncNoteMirror(ta);
+
+                ta.addEventListener('input', () => {
+                    saveValue(ta.id, ta.value);
+                    syncNoteMirror(ta);
+                    updateNotesSummary();
+                    syncSvgSize();
+
+                    const badge = document.getElementById('badge_' + ta.id);
+                    if (badge) {
+                        badge.classList.add('visible');
+                        clearTimeout(saveTimers[ta.id]);
+                        saveTimers[ta.id] = setTimeout(() => {
+                            badge.classList.remove('visible');
+                        }, 1800);
+                    }
+                });
+            });
+
+            document.querySelectorAll('.exercise-input').forEach(inp => {
+                const saved = loadValue(inp.id);
+                if (saved) inp.value = saved;
+                inp.addEventListener('input', () => saveValue(inp.id, inp.value));
+            });
+
+            loadStrokes();
+            updateNotesSummary();
+        }
+
+        function showToast(msg) {
+            const toast = document.getElementById('statusToast');
+            toast.textContent = msg;
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 3500);
+        }
+
+        function printWithNotes() {
+            closePenDock();
+            document.querySelectorAll('.obs-textarea').forEach(syncNoteMirror);
+            syncSvgSize();
+            window.print();
+        }
+
+        function exportNotesTxt() {
+            const lines = [];
+            lines.push('=====================================================');
+            lines.push('MÉTODO IPA - MINHAS ANOTAÇÕES DA AULA 26');
+            lines.push('Tema: Condicionais Zero e Tipo 1 (Reais e Prováveis)');
+            lines.push('=====================================================\n');
+
+            let hasAny = false;
+            document.querySelectorAll('.obs-textarea').forEach(ta => {
+                const val = ta.value.trim();
+                if (val) {
+                    hasAny = true;
+                    const secName = ta.getAttribute('data-section-name') || ta.id;
+                    lines.push(`--- ${secName} ---`);
+                    lines.push(val + '\n');
+                }
+            });
+
+            if (!hasAny) {
+                showToast('Você ainda não escreveu nenhuma observação para exportar.');
+                return;
+            }
+
+            const blob = new Blob([lines.join('\n')], { type: 'text/plain;charset=utf-8' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'minhas_observacoes_aula26.txt';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            showToast('✅ Arquivo "minhas_observacoes_aula26.txt" baixado com sucesso!');
+        }
+
+        function showClearConfirm() {
+            document.getElementById('clearConfirmBox').classList.add('show');
+        }
+        function hideClearConfirm() {
+            document.getElementById('clearConfirmBox').classList.remove('show');
+        }
+
+        function confirmClearAll() {
+            document.querySelectorAll('.obs-textarea').forEach(ta => {
+                ta.value = '';
+                deleteValue(ta.id);
+                syncNoteMirror(ta);
+            });
+            document.querySelectorAll('.exercise-input').forEach(inp => {
+                inp.value = '';
+                deleteValue(inp.id);
+            });
+            strokes = [];
+            renderAllStrokes();
+            saveStrokes();
+            updateNotesSummary();
+            hideClearConfirm();
+            showToast('🗑️ Todas as observações, respostas e desenhos da Aula 26 foram limpos.');
+        }
+
+        // =========================================================================
+        // 5. QUIZ INTERATIVO
+        // =========================================================================
+        function checkQuiz(button, isCorrect, qId, explanation) {
+            const parent = button.parentElement;
+            const buttons = parent.querySelectorAll('.quiz-btn');
+            buttons.forEach(btn => btn.disabled = true);
+
+            const feedback = document.getElementById('feedback-' + qId);
+            feedback.style.display = 'block';
+
+            if (isCorrect) {
+                button.classList.add('correct');
+                feedback.innerHTML = '✅ ' + explanation;
+                feedback.style.background = '#dcfce7';
+                feedback.style.color = '#14532d';
+            } else {
+                button.classList.add('incorrect');
+                buttons.forEach(btn => {
+                    if (btn.getAttribute('onclick').includes('true')) {
+                        btn.classList.add('correct');
+                    }
+                });
+                feedback.innerHTML = '❌ ' + explanation;
+                feedback.style.background = '#fee2e2';
+                feedback.style.color = '#7f1d1d';
+            }
+            syncSvgSize();
+        }
+
+        // =========================================================================
+        // 6. SINTETIZADOR DE VOZ NATIVO (WEB SPEECH API)
+        // =========================================================================
+        let voices = [];
+        let isStoryPlaying = false;
+
+        function loadVoices() {
+            if ('speechSynthesis' in window) {
+                voices = window.speechSynthesis.getVoices();
+            }
+        }
+        loadVoices();
+        if ('speechSynthesis' in window && window.speechSynthesis.onvoiceschanged !== undefined) {
             window.speechSynthesis.onvoiceschanged = loadVoices;
         }
 
-        function playAudio(text) {
-            if ('speechSynthesis' in window) {
-                // Cancela qualquer áudio anterior para não sobrepor
-                window.speechSynthesis.cancel();
+        function getBestVoice() {
+            if (voices.length === 0) loadVoices();
+            return voices.find(v => /^en(-|_)/i.test(v.lang) && /Google|Premium|Samantha|Microsoft|Natural/i.test(v.name))
+                || voices.find(v => v.lang === 'en-US')
+                || voices.find(v => v.lang.startsWith('en'));
+        }
 
-                const utterance = new SpeechSynthesisUtterance(text);
-                utterance.rate = 0.85; // Velocidade um pouco mais lenta para estudo
-                utterance.pitch = 1;
-
-                // Lógica de seleção de voz para evitar sotaque "aportuguesado"
-                if (voices.length === 0) loadVoices();
-
-                // 1. Tenta vozes "Premium" ou "Google" (comuns no Android)
-                let targetVoice = voices.find(voice => 
-                    (voice.name.includes('Google') || voice.name.includes('Premium') || voice.name.includes('Samantha')) 
-                    && voice.lang.includes('en-US')
-                );
-
-                // 2. Se não achar, tenta qualquer voz en-US
-                if (!targetVoice) {
-                    targetVoice = voices.find(voice => voice.lang === 'en-US');
-                }
-
-                // 3. Se ainda não achar, tenta qualquer voz inglesa (en-GB, etc)
-                if (!targetVoice) {
-                    targetVoice = voices.find(voice => voice.lang.startsWith('en'));
-                }
-
-                if (targetVoice) {
-                    utterance.voice = targetVoice;
-                    // Força o lang caso a voz não tenha definido (bug comum em alguns browsers)
-                    utterance.lang = targetVoice.lang; 
-                } else {
-                    utterance.lang = 'en-US'; // Fallback final
-                }
-
-                window.speechSynthesis.speak(utterance);
-            } else {
-                alert("Desculpe, seu navegador não suporta reprodução de áudio.");
+        function resetStoryButton() {
+            isStoryPlaying = false;
+            const btn = document.getElementById('storyAudioBtn');
+            if (btn) {
+                btn.textContent = '🔊 Ouvir História Completa';
+                btn.classList.remove('stop');
             }
+        }
+
+        function playAudio(text) {
+            if (!('speechSynthesis' in window)) {
+                showToast('⚠️ Seu navegador não oferece leitura de áudio nativa. Use Chrome, Safari ou Edge.');
+                return;
+            }
+            window.speechSynthesis.cancel();
+            resetStoryButton();
+
+            const u = new SpeechSynthesisUtterance(text);
+            u.rate = 0.86;
+            u.pitch = 1;
+            const target = getBestVoice();
+            if (target) {
+                u.voice = target;
+                u.lang = target.lang;
+            } else {
+                u.lang = 'en-US';
+            }
+            window.speechSynthesis.speak(u);
+        }
+
+        function playTableAudio(type, idx) {
+            const arr = type === 'zero' ? zeroSentences : firstSentences;
+            const clean = arr[idx][0].replace(/<\/?b>/g, '');
+            playAudio(clean);
+        }
+
+        function playVocabAudio(idx) {
+            const clean = vocabWords[idx][0].replace(/\//g, ', ');
+            playAudio(clean);
+        }
+
+        function toggleStoryAudio() {
+            if (!('speechSynthesis' in window)) {
+                showToast('⚠️ Seu navegador não oferece leitura de áudio nativa. Use Chrome, Safari ou Edge.');
+                return;
+            }
+            if (isStoryPlaying) {
+                window.speechSynthesis.cancel();
+                resetStoryButton();
+                return;
+            }
+
+            window.speechSynthesis.cancel();
+            isStoryPlaying = true;
+            const btn = document.getElementById('storyAudioBtn');
+            btn.textContent = '⏹ Parar Leitura da História';
+            btn.classList.add('stop');
+
+            const u = new SpeechSynthesisUtterance(fullStoryText);
+            u.rate = 0.85;
+            u.pitch = 1;
+            const target = getBestVoice();
+            if (target) {
+                u.voice = target;
+                u.lang = target.lang;
+            } else {
+                u.lang = 'en-US';
+            }
+            u.onend = resetStoryButton;
+            u.onerror = resetStoryButton;
+            window.speechSynthesis.speak(u);
+        }
+
+        // INICIALIZAÇÃO E MONITORAMENTO DE TAMANHO DO LIVRO PARA A CAMADA SVG
+        renderSentenceTable(zeroSentences, 'zeroTableBody', 'zero-row', '', 'zero');
+        renderSentenceTable(firstSentences, 'firstTableBody', 'first-row', 'teal', 'first');
+        renderVocabGrid();
+        initPersistentFields();
+        syncSvgSize();
+
+        window.addEventListener('resize', syncSvgSize);
+        if ('ResizeObserver' in window) {
+            const ro = new ResizeObserver(() => syncSvgSize());
+            ro.observe(lessonBook);
         }
     </script>
 </body>
